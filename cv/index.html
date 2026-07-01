@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rob Kerr — CV</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root {
+    --ink: #0c0e1a;
+    --body: #2a2d40;
+    --muted: #666980;
+    --line: #dde0ef;
+    --bg: #ffffff;
+    --surface: #f6f7fc;
+    --brand: #1e40af;
+    --shadow: 0 1px 2px rgba(12,14,26,.04), 0 8px 24px rgba(12,14,26,.06);
+    --radius: 16px;
+    --maxw: 860px;
+    --display: 'Fraunces', Georgia, 'Times New Roman', serif;
+    --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--sans);
+    color: var(--body);
+    background: var(--bg);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 32px; }
+
+  /* ── top bar ── */
+  .topbar {
+    border-bottom: 1px solid var(--line);
+    padding: 16px 0;
+    position: sticky;
+    top: 0;
+    background: rgba(255,255,255,.95);
+    backdrop-filter: blur(8px);
+    z-index: 10;
+  }
+  .topbar-inner {
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 0 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .topbar a { color: var(--brand); text-decoration: none; font-size: 14px; font-weight: 500; }
+  .topbar a:hover { text-decoration: underline; }
+  .topbar-name { font-family: var(--display); font-size: 17px; color: var(--ink); font-weight: 500; }
+
+  /* ── header ── */
+  .cv-header {
+    padding: 64px 0 48px;
+    border-bottom: 2px solid var(--ink);
+  }
+  .cv-header h1 {
+    font-family: var(--display);
+    font-size: clamp(36px, 6vw, 56px);
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: -.02em;
+    line-height: 1.05;
+    margin-bottom: 20px;
+  }
+  .cv-contact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .cv-contact a { color: var(--brand); text-decoration: none; }
+  .cv-contact a:hover { text-decoration: underline; }
+
+  /* ── profile ── */
+  .profile {
+    padding: 40px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .profile p {
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--body);
+    max-width: 72ch;
+  }
+
+  /* ── sections ── */
+  .cv-section { padding: 40px 0; border-bottom: 1px solid var(--line); }
+  .cv-section:last-child { border-bottom: none; }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 28px;
+  }
+
+  /* ── role block ── */
+  .role { margin-bottom: 36px; }
+  .role:last-child { margin-bottom: 0; }
+
+  .role-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 4px;
+  }
+  .role-company {
+    font-family: var(--display);
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .role-dates {
+    font-size: 13px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .role-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--brand);
+    margin-bottom: 10px;
+  }
+  .role-intro {
+    font-size: 15px;
+    color: var(--body);
+    margin-bottom: 12px;
+    line-height: 1.6;
+  }
+  .role ul {
+    list-style: none;
+    padding: 0;
+  }
+  .role ul li {
+    font-size: 15px;
+    color: var(--body);
+    line-height: 1.6;
+    padding-left: 18px;
+    position: relative;
+    margin-bottom: 7px;
+  }
+  .role ul li::before {
+    content: '–';
+    position: absolute;
+    left: 0;
+    color: var(--muted);
+  }
+
+  /* sub-roles (inside freelance block) */
+  .sub-role { margin-bottom: 20px; padding-left: 0; }
+  .sub-role-header { margin-bottom: 4px; }
+  .sub-role-name {
+    font-weight: 600;
+    color: var(--ink);
+    font-size: 15px;
+  }
+  .sub-role-dates {
+    font-size: 13px;
+    color: var(--muted);
+    margin-left: 8px;
+  }
+  .sub-role p {
+    font-size: 15px;
+    color: var(--body);
+    line-height: 1.6;
+  }
+
+  /* ── case study link ── */
+  .case-study-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--brand);
+    text-decoration: none;
+    border: 1.5px solid var(--brand);
+    padding: 5px 12px;
+    border-radius: 20px;
+    transition: background .15s, color .15s;
+  }
+  .case-study-link:hover {
+    background: var(--brand);
+    color: #fff;
+  }
+  .case-study-link svg { width: 12px; height: 12px; }
+
+  /* ── two-col footer (education + pro bono) ── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    padding: 40px 0 56px;
+  }
+  @media (max-width: 560px) {
+    .two-col { grid-template-columns: 1fr; gap: 36px; }
+  }
+
+  .edu-item { margin-bottom: 20px; }
+  .edu-item:last-child { margin-bottom: 0; }
+  .edu-inst {
+    font-family: var(--display);
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 2px;
+  }
+  .edu-degree { font-size: 14px; color: var(--body); }
+  .edu-note { font-size: 13px; color: var(--muted); }
+
+  .probono-item { margin-bottom: 16px; }
+  .probono-item:last-child { margin-bottom: 0; }
+  .probono-org {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--ink);
+    margin-bottom: 2px;
+  }
+  .probono-desc { font-size: 14px; color: var(--body); line-height: 1.5; }
+
+  /* ── print ── */
+  @media print {
+    .topbar { display: none; }
+    .cv-header { padding: 24px 0 20px; }
+    .wrap { padding: 0 24px; }
+    body { font-size: 13px; }
+    .case-study-link { border: none; padding: 0; color: var(--brand); }
+  }
+
+  @media (max-width: 600px) {
+    .wrap { padding: 0 20px; }
+    .topbar-inner { padding: 0 20px; }
+    .role-header { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="topbar">
+  <div class="topbar-inner">
+    <span class="topbar-name">Rob Kerr</span>
+    <a href="https://robertkerr.co.uk">← robertkerr.co.uk</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- header -->
+  <header class="cv-header">
+    <h1>Rob Kerr</h1>
+    <div class="cv-contact">
+      <span>07969784239</span>
+      <a href="mailto:rkerr90@gmail.com">rkerr90@gmail.com</a>
+      <a href="https://linkedin.com/in/robkerr" target="_blank">LinkedIn</a>
+      <a href="https://robertkerr.co.uk" target="_blank">robertkerr.co.uk</a>
+      <span>London, SE27</span>
+    </div>
+  </header>
+
+  <!-- profile -->
+  <section class="profile">
+    <p>Product leader and founder with a decade building consumer and 0-1 ventures, from personalised print-on-demand ecommerce through to public consumer platforms. I built and sold Giant Sparrows, a bootstrapped print-on-demand personalisation business that reached profitability and worked with content owners including MoMA, the British Museum and Tate Modern. Since then I have led consumer product at the BBC (a new iPlayer "Live" vertical) and owned product across a FTSE 250 network. For the last two years I have worked hands-on as an AI-native builder, prototyping and shipping working products fast. I move easily between strategy and the build itself.</p>
+  </section>
+
+  <!-- experience -->
+  <section class="cv-section">
+    <div class="section-label">Experience</div>
+
+    <!-- Freelance block -->
+    <div class="role">
+      <div class="role-header">
+        <span class="role-company">Independent Product Leadership &amp; Interim</span>
+        <span class="role-dates">Sept 2022 – Present</span>
+      </div>
+      <div class="role-intro">Hands-on product consultancy and interim leadership across AI, consumer, climate and enterprise sectors.</div>
+
+      <div class="sub-role">
+        <div class="sub-role-header">
+          <span class="sub-role-name">IFRS Foundation</span>
+          <span class="sub-role-dates">Feb 2026 – Present &nbsp;·&nbsp; Interim Product Director &amp; AI Lead</span>
+        </div>
+        <p>Leading AI-native product development inside an international standards body: building their AI Navigator and eval suite, automating cross-team workflows, and building the product team's capability to work with modern AI tooling.</p>
+      </div>
+
+      <div class="sub-role">
+        <div class="sub-role-header">
+          <span class="sub-role-name">BBC</span>
+          <span class="sub-role-dates">Feb 2023 – Aug 2023 &nbsp;·&nbsp; Interim Group Product Manager, BBC iPlayer</span>
+        </div>
+        <p>Launched a new "Live" vertical. Created the vision and shipped a live highlights feature for Glastonbury across web and TV, then refined it on test data that lifted weekly active usage and secured resource for launch on the core TV platform.</p>
+      </div>
+
+      <div class="sub-role">
+        <div class="sub-role-header">
+          <span class="sub-role-name">Vocovo</span>
+          <span class="sub-role-dates">Oct 2024 – Mar 2025 &nbsp;·&nbsp; Product Consultant</span>
+        </div>
+        <p>Hired to embed modern product management at a UK retail technology scale-up. Delivered a new product roadmap and operating model, and coached a team of Product Owners and Product Managers.</p>
+      </div>
+
+      <div class="sub-role">
+        <div class="sub-role-header">
+          <span class="sub-role-name">Canairy.ai</span>
+          <span class="sub-role-dates">Feb 2024 – Aug 2024 &nbsp;·&nbsp; Fractional Product Lead</span>
+        </div>
+        <p>Fractional product expert to founders of a pre-seed edge-AI startup building an environmental monitoring platform. Focused on product strategy, experimentation and shaping a commercially viable, data-driven platform.</p>
+      </div>
+
+      <div class="sub-role">
+        <div class="sub-role-header">
+          <span class="sub-role-name">Career break</span>
+          <span class="sub-role-dates">Apr 2025 – Dec 2025</span>
+        </div>
+        <p>Time out to support a family member; used it to build fluency in AI product tooling — prototyping platforms, prompt engineering, agents.</p>
+      </div>
+    </div>
+
+    <!-- UW -->
+    <div class="role">
+      <div class="role-header">
+        <span class="role-company">Utility Warehouse</span>
+        <span class="role-dates">Sept 2020 – Aug 2022</span>
+      </div>
+      <div class="role-title">Head of Product, Partner Network</div>
+      <p class="role-intro">Owned the Partner product line for a FTSE 250 multi-utility provider supporting a network of over 60,000 Partners.</p>
+      <ul>
+        <li>Delivered a new Partner product strategy, won board endorsement and funding, and executed it across 24 months.</li>
+        <li>Shipped a native Partner app that increased the primary activation milestone by 5x and conversion by 2x versus control.</li>
+        <li>Conceived and delivered the company's first production ML service — a switching-propensity model built on third-party datasets — demonstrating pragmatic integration of AI for commercial value.</li>
+        <li>Delivered 10,000 new Partner subscriptions and supported annual customer growth from 4% to 16%.</li>
+        <li>Shifted the organisation from feature-driven delivery to OKR-driven product management with continuous discovery and experimentation.</li>
+      </ul>
+      <a class="case-study-link" href="https://robertkerr.co.uk/uw-partner-network/" target="_blank">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+        Case study
+      </a>
+    </div>
+
+    <!-- Sense_ -->
+    <div class="role">
+      <div class="role-header">
+        <span class="role-company">Sense_</span>
+        <span class="role-dates">Jul 2018 – Aug 2020</span>
+      </div>
+      <div class="role-title">Product Director (0-1 venture)</div>
+      <p class="role-intro">Led product for an AI-driven sensor platform ("Google Analytics for physical space") that optimises space, energy use and occupant comfort for large real-estate owners.</p>
+      <ul>
+        <li>Took the concept from hypothesis to product-market fit: landscaping, commercial modelling, user research, proposition and go-to-market strategy.</li>
+        <li>Directed development of the machine-learning model and sensor, enabling advanced people and object detection and demonstrating applied AI in the built-environment context.</li>
+        <li>Led development of backend and frontend systems, including a native app, working with a third-party agency and cross-functional teams.</li>
+        <li>Built an early-adopter programme with a pipeline over £30m (Walthamstow Council, Warner Brothers, Romulus, Facebook).</li>
+      </ul>
+      <a class="case-study-link" href="https://robertkerr.co.uk/sense/" target="_blank">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+        Case study
+      </a>
+    </div>
+
+    <!-- Mipic -->
+    <div class="role">
+      <div class="role-header">
+        <span class="role-company">Mipic.co</span>
+        <span class="role-dates">Jan 2018 – Jun 2018</span>
+      </div>
+      <div class="role-title">Product Consultant</div>
+      <p class="role-intro">B2C marketplace turning social-media imagery into globally-fulfilled products. Optimised go-to-market and performance marketing, and piloted a novel strategy building on platform creators' audiences.</p>
+    </div>
+
+    <!-- Giant Sparrows -->
+    <div class="role">
+      <div class="role-header">
+        <span class="role-company">Giant Sparrows</span>
+        <span class="role-dates">Feb 2014 – Sep 2017</span>
+      </div>
+      <div class="role-title">CEO &amp; Co-founder (0-1 venture)</div>
+      <p class="role-intro">Bootstrapped and scaled a print-on-demand personalisation ecommerce business with global fulfilment. Brought it to profit on just under seven figures of revenue and exited via a trade sale in 2017.</p>
+      <ul>
+        <li>Built the B2C personalisation experience, integrating the Instagram and Facebook APIs so customers could turn their own images into beautiful physical products.</li>
+        <li>Drove growth through SEO and paid search, with email marketing automation for retention and repeat purchase.</li>
+        <li>Built a B2B line working with content owners including the British Museum and Tate Modern, meeting an institutional bar on craft and reproduction quality. This unplanned trade line grew to 60% of revenue and carried the business to profit.</li>
+      </ul>
+      <a class="case-study-link" href="https://robertkerr.co.uk/giant-sparrows/" target="_blank">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+        Case study
+      </a>
+    </div>
+
+    <!-- BT -->
+    <div class="role">
+      <div class="role-header">
+        <span class="role-company">British Telecom</span>
+        <span class="role-dates">Sept 2007 – Jan 2014</span>
+      </div>
+      <div class="role-title">Head of Client Services</div>
+      <p class="role-intro">Led go-to-market and productising activities for BT One, a new global enterprise SaaS solution within BT Global Services.</p>
+      <ul>
+        <li>Ran a multimillion Microsoft/BT-funded programme across the top 100 accounts.</li>
+        <li>Productised a high-touch sales model into a globally scalable software offering, rolling it out across Europe, APAC and North America.</li>
+        <li>Worked with partners including Microsoft, Cisco and IBM on technology integration and ecosystem management.</li>
+      </ul>
+    </div>
+
+    <!-- Nielsen -->
+    <div class="role">
+      <div class="role-header">
+        <span class="role-company">Nielsen</span>
+        <span class="role-dates">Jan 2003 – Jul 2006</span>
+      </div>
+      <div class="role-title">Technology Practice Lead, Russia &amp; Middle East</div>
+      <p class="role-intro">Progressed from Research Executive to Technology Practice Lead, relocating to Moscow to develop the market for client research for Western firms entering Russia. Built and led a team of 15 delivering 20% of division revenues.</p>
+    </div>
+
+  </section>
+
+  <!-- education + pro bono -->
+  <div class="two-col">
+    <div>
+      <div class="section-label">Education</div>
+      <div class="edu-item">
+        <div class="edu-inst">Cambridge University</div>
+        <div class="edu-degree">MBA</div>
+        <div class="edu-note">Director's Scholarship · GMAT 700</div>
+      </div>
+      <div class="edu-item">
+        <div class="edu-inst">Dalhousie University</div>
+        <div class="edu-degree">Bachelor of Commerce</div>
+        <div class="edu-note">Alexander Rutherford Scholarship</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">Pro Bono</div>
+      <div class="probono-item">
+        <div class="probono-org">Virgin Startup</div>
+        <div class="probono-desc">Business Mentor (2015 – 2018): mentored early-stage founders for the Virgin Group non-profit.</div>
+      </div>
+      <div class="probono-item">
+        <div class="probono-org">Light-fi</div>
+        <div class="probono-desc">Product strategy and roadmap for a proptech startup's academic founders.</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /wrap -->
+</body>
+</html>
