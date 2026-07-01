@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Giant Sparrows: Case Study | Rob Kerr</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    --ink:#1c1414;
+    --body:#4a3f3b;
+    --muted:#7a6f68;
+    --line:#ece5df;
+    --bg:#ffffff;
+    --surface:#fbf8f5;
+    --surface-2:#f4ede6;
+    --brand:#b0451f;
+    --brand-2:#c8892a;
+    --exp:#b0451f;
+    --acq:#a1622a;
+    --perf:#6f5a3e;
+    --shadow:0 1px 2px rgba(28,20,20,.04), 0 8px 24px rgba(28,20,20,.06);
+    --shadow-lg:0 24px 60px rgba(28,20,20,.12);
+    --radius:16px;
+    --maxw:980px;
+    --display:'Fraunces', Georgia, 'Times New Roman', serif;
+    --sans:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:var(--sans);color:var(--body);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  h1,h2,h3,h4{font-family:var(--display);color:var(--ink);font-weight:500;line-height:1.15;letter-spacing:-.01em}
+  p{margin:0 0 1.05em}
+  a{color:var(--brand);text-decoration:none}
+  a:hover{text-decoration:underline}
+  strong{color:var(--ink);font-weight:600}
+
+  .topbar{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.82);backdrop-filter:saturate(160%) blur(12px);border-bottom:1px solid var(--line);}
+  .topbar .wrap{display:flex;align-items:center;gap:16px;height:60px}
+  .brandmark{font-family:var(--display);font-weight:600;color:var(--ink);font-size:16px;letter-spacing:-.01em}
+  .brandmark span{color:var(--brand-2)}
+  .nav{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
+  .nav a{font-size:13px;color:var(--muted);padding:6px 10px;border-radius:8px;font-weight:500;}
+  .nav a:hover{color:var(--ink);background:var(--surface-2);text-decoration:none}
+
+  .toggle{display:inline-flex;background:var(--surface-2);border-radius:999px;padding:3px;gap:2px;border:1px solid var(--line);}
+  .toggle button{font-family:var(--sans);font-size:12.5px;font-weight:600;color:var(--muted);border:0;background:transparent;padding:6px 14px;border-radius:999px;cursor:pointer;transition:.15s;}
+  .toggle button.active{background:#fff;color:var(--brand);box-shadow:var(--shadow)}
+
+  .hero{background:radial-gradient(1200px 500px at 80% -10%, rgba(200,137,42,.12), transparent 60%),radial-gradient(900px 500px at 0% 0%, rgba(176,69,31,.10), transparent 55%),var(--surface);border-bottom:1px solid var(--line);padding:64px 0 56px;}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--brand);background:#fff;border:1px solid var(--line);padding:6px 12px;border-radius:999px;margin-bottom:22px;}
+  .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--brand-2)}
+  .hero h1{font-size:clamp(34px,5.2vw,54px);margin:0 0 20px;max-width:17ch}
+  .hook{font-size:clamp(18px,2.4vw,22px);color:var(--body);max-width:62ch;margin:0 0 28px}
+  .hook b{color:var(--ink);font-weight:600}
+  .meta{display:flex;gap:28px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+  .meta div span{display:block;color:var(--ink);font-weight:600;font-family:var(--display);font-size:15px;margin-top:2px}
+
+  .stats{padding:40px 0}
+  .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .stat{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px 20px;box-shadow:var(--shadow);}
+  .stat .num{font-family:var(--display);font-size:clamp(26px,3.6vw,38px);font-weight:600;color:var(--ink);line-height:1}
+  .stat .num .suffix{color:var(--brand-2)}
+  .stat .lbl{font-size:13px;color:var(--muted);margin-top:10px;line-height:1.4}
+  @media(max-width:760px){.stat-grid{grid-template-columns:repeat(2,1fr)}}
+
+  section{padding:48px 0;border-top:1px solid var(--line)}
+  .kicker{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--brand-2);margin-bottom:12px}
+  section h2{font-size:clamp(24px,3.4vw,34px);margin:0 0 20px;max-width:24ch}
+  .lead{font-size:18px;color:var(--body);max-width:62ch}
+  .prose{max-width:64ch}
+  .prose p{font-size:16.5px}
+
+  .summary-card{background:linear-gradient(180deg,var(--surface),#fff);border:1px solid var(--line);border-radius:20px;padding:32px 32px 8px;box-shadow:var(--shadow);}
+  @media(max-width:620px){.summary-card{padding:24px 22px 4px}}
+
+  /* segmented bar (revenue mix) */
+  .mixwrap{margin-top:8px}
+  .bar-seg{display:flex;height:56px;border-radius:10px;overflow:hidden;border:1px solid var(--line)}
+  .seg{display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;transition:flex .6s ease;text-align:center;padding:0 6px;min-width:0}
+  .seg.pers{background:linear-gradient(135deg,var(--brand),#c85a30)}
+  .seg.mkt{background:repeating-linear-gradient(135deg,#e9d9c4,#e9d9c4 9px,#e0cbb0 9px,#e0cbb0 18px);color:#7a6350}
+  .seg.trade{background:linear-gradient(135deg,#6f5a3e,#8a6f4a)}
+  .bar-caption{font-size:13px;color:var(--muted);margin-top:14px}
+  .mix-legend{display:flex;gap:18px;flex-wrap:wrap;margin:14px 0 0;font-size:12.5px;color:var(--muted)}
+  .mix-legend span{display:inline-flex;align-items:center;gap:7px}
+  .mix-legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+  .mix-legend i.p{background:var(--brand)} .mix-legend i.m{background:#e0cbb0} .mix-legend i.t{background:#6f5a3e}
+
+  /* journey / pipeline */
+  .journey{display:flex;align-items:stretch;gap:10px}
+  @media(max-width:760px){.journey{flex-direction:column}}
+  .j-arrow{align-self:center;color:#cabfae;font-size:22px;flex:0 0 auto}
+  @media(max-width:760px){.j-arrow{transform:rotate(90deg);margin:2px 0}}
+  .j-stage{flex:1;background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden}
+  .j-band{padding:16px 18px;color:#fff}
+  .j-band.s1{background:linear-gradient(135deg,#b0451f,#c85a30)}
+  .j-band.s2{background:linear-gradient(135deg,#a1622a,#b87c38)}
+  .j-band.s3{background:linear-gradient(135deg,#8a6f4a,#6f5a3e)}
+  .j-band.s4{background:linear-gradient(135deg,#c8892a,#dba23f)}
+  .j-band .j-no{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;opacity:.9}
+  .j-band h3{color:#fff;font-size:19px;margin:3px 0 6px}
+  .j-band .j-line{font-size:12.5px;opacity:.95;line-height:1.4}
+  .j-caps{display:flex;flex-direction:column;gap:7px;padding:16px 18px}
+  .j-cap{font-size:12.5px;padding:8px 11px;border-radius:9px;background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--line);color:var(--ink);font-weight:500;transition:.15s}
+  .j-cap:hover{transform:translateX(2px)}
+  .j-cap.lead{background:linear-gradient(135deg,rgba(176,69,31,.08),rgba(200,137,42,.08));font-weight:600;border-left-color:var(--brand)}
+  .matrix-note{font-size:12.5px;color:var(--muted);margin-top:10px;font-style:italic}
+
+  /* two engines */
+  .engine{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:26px 28px;box-shadow:var(--shadow)}
+  .engine h3{font-size:20px;margin:0 0 4px}
+  .engine .etag{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--brand-2)}
+  .engine p{font-size:15.5px;margin:12px 0 0;max-width:62ch}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+  .chip{font-size:12.5px;padding:7px 12px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);color:var(--ink);font-weight:500}
+
+  details.deep{border-top:1px solid var(--line)}
+  details.deep summary{list-style:none;cursor:pointer;padding:14px 0 4px;font-size:13.5px;font-weight:600;color:var(--brand);display:flex;align-items:center;gap:8px;user-select:none;}
+  details.deep summary::-webkit-details-marker{display:none}
+  details.deep summary .chev{transition:.2s;font-size:11px}
+  details.deep[open] summary .chev{transform:rotate(90deg)}
+  .deep-content{padding:4px 0 8px;font-size:15px;max-width:66ch}
+  .deep-content ul{margin:0 0 12px;padding-left:18px}
+  .deep-content li{margin-bottom:8px}
+
+  .lessons{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:8px}
+  @media(max-width:760px){.lessons{grid-template-columns:1fr}}
+  .lesson{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+  .lesson h4{font-size:16px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+  .lesson p{font-size:14.5px;margin:0}
+  .lesson.win{border-top:3px solid var(--acq)}
+  .lesson.diff{border-top:3px solid var(--brand)}
+  .pull{grid-column:1/-1;background:var(--ink);color:#fff;border-radius:var(--radius);padding:28px 32px;font-family:var(--display);font-size:clamp(19px,2.6vw,26px);line-height:1.3;font-weight:500;}
+  .pull span{color:#e8b169}
+
+  body.mode-overview .overview-hidden{display:none}
+
+  .footer{padding:48px 0 64px;border-top:1px solid var(--line);color:var(--muted);font-size:13.5px}
+  .footer a{color:var(--brand)}
+  .src{font-size:12.5px;color:var(--muted);margin-top:10px}
+
+  .impact{margin-top:26px;background:linear-gradient(135deg,rgba(176,69,31,.06),rgba(200,137,42,.07));border:1px solid var(--line);border-left:3px solid var(--brand);border-radius:14px;padding:22px 26px}
+  .impact-k{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--brand-2);margin-bottom:8px}
+  .impact p{margin:0;font-size:16px;color:var(--body);max-width:66ch}
+</style>
+</head>
+<body class="mode-overview">
+
+<div class="topbar">
+  <div class="wrap">
+    <div class="brandmark">Rob Kerr <span>/</span> Case study</div>
+    <nav class="nav overview-hidden">
+      <a href="#context">Context</a>
+      <a href="#built">What we built</a>
+      <a href="#market">The market</a>
+      <a href="#pivot">The pivot</a>
+      <a href="#lessons">Lessons</a>
+    </nav>
+    <div class="toggle" style="margin-left:auto" role="tablist" aria-label="Reading depth">
+      <button id="btn-overview" class="active" onclick="setMode('overview')">Overview</button>
+      <button id="btn-deep" onclick="setMode('deep')">Deep dive</button>
+    </div>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow"><span class="dot"></span> Founder · 0-1 venture</span>
+    <h1>A personalised print business, built from the image up</h1>
+    <p class="hook">Giant Sparrows was a vertically integrated print-on-demand business. People turned their own Instagram and Facebook photos, or licensed artwork from Frida Kahlo to the Munch Museum, into <b>high-end phone cases</b> we printed in a Brixton workshop and shipped worldwide. I co-founded it, built the technology, took it to profit, and sold it in 2017. The business we sold was not the one we set out to build.</p>
+    <div class="meta">
+      <div>Role<span>CEO &amp; Co-founder</span></div>
+      <div>Team<span>3 co-founders · in-house workshop</span></div>
+      <div>Span<span>2014 – 2017</span></div>
+      <div>Outcome<span>Profitable trade-sale exit</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="stats">
+  <div class="wrap">
+    <div class="stat-grid">
+      <div class="stat"><div class="num" data-count="3">3</div><div class="lbl">years from hypothesis to a profitable trade-sale exit</div></div>
+      <div class="stat"><div class="num" data-count="60" data-suffix="%">60<span class="suffix">%</span></div><div class="lbl">of revenue, by exit, from a trade line we never planned to build</div></div>
+      <div class="stat"><div class="num">&asymp;&pound;1m</div><div class="lbl">annual revenue, brought into profit before the sale</div></div>
+      <div class="stat"><div class="num">Global</div><div class="lbl">fulfilment, from one workshop in Brixton</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SUMMARY -->
+<section id="summary" style="border-top:0">
+  <div class="wrap">
+    <div class="summary-card">
+      <div class="kicker">The short version</div>
+      <div class="prose">
+        <p>Two of my co-founders were artists; I built the technology. Together we made it genuinely easy to take an image you loved, your own photo or a licensed piece of art, and turn it into a beautifully made physical object. We owned the whole chain: the design experience, the image ingestion, the printing, the packaging and the global fulfilment, all from a single workshop in Brixton.</p>
+        <p>The personalisation side found product-market fit fastest, and because we were early and the product was good, we grew quickly on low acquisition costs. Then the wall arrived. Larger competitors entered the category, offered a worse experience and product, and simply outspent us. What saved the business was something we never planned: <strong>Content owners like the British Museum and Tate Modern asked us to fulfil their content for their own retail channels.</strong> That trade line grew to 60% of revenue and carried us to profit.</p>
+        <p>We sold in 2017 to a Scottish print company that wanted those trade relationships. It was a good outcome and a formative one. The lesson I carried out of it was about defensibility.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTEXT -->
+<section id="context">
+  <div class="wrap">
+    <div class="kicker">01 · Context</div>
+    <h2>Two trends converging</h2>
+    <div class="prose">
+      <p>Giant Sparrows sat at the intersection of two things happening at once in 2014. The first was the high-end mobile accessory market, which was exploding on the back of the iPhone. People had started spending real money to protect and personalise a device they carried everywhere. The second was social imagery: Instagram and Facebook had turned everyone into a photographer, and, crucially, both had opened up API access. For the first time you could reach into someone's own camera roll, with their permission, and do something with it.</p>
+      <p>The gap in the middle was the interesting part. People were sitting on thousands of images that meant something to them, and almost nowhere good to put them. We set out to close that gap with a product that felt precious rather than novelty: take an image you care about, and make something you would actually want to own.</p>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT WE BUILT -->
+<section id="built">
+  <div class="wrap">
+    <div class="kicker">02 · What we built</div>
+    <h2>A vertically integrated print-on-demand business</h2>
+    <p class="lead">We built the whole chain ourselves, front end to fulfilment, because the quality of the end product depended on controlling every step. There were two ways in, and one pipeline underneath them.</p>
+
+    <div style="margin:20px 0 22px">
+      <div class="toggle" role="tablist" aria-label="Two ways in">
+        <button id="ev-pers" class="active" onclick="engineView('pers')">Your own photos</button>
+        <button id="ev-mkt" onclick="engineView('mkt')">Licensed artwork</button>
+      </div>
+    </div>
+
+    <div id="engine-pers" class="engine">
+      <span class="etag">Personalisation</span>
+      <h3>Turn your own photos into something you'd keep</h3>
+      <p>Connect an Instagram or Facebook account, and our custom-built design UI let you make a single photo, a collage, or whatever layout you wanted, and see it as a finished case. The whole point was to shorten the distance between "an image I love" and "a beautiful thing in my hand" to as few steps as possible. This became by far the most popular part of the business.</p>
+      <div class="chips">
+        <span class="chip">Instagram &amp; Facebook API ingestion</span>
+        <span class="chip">Custom design & collage UI</span>
+        <span class="chip">Single photo, collage, free layout</span>
+        <span class="chip">Live preview of the finished product</span>
+      </div>
+    </div>
+
+    <div id="engine-mkt" class="engine" hidden>
+      <span class="etag">Marketplace</span>
+      <h3>Licensed art, from Frida Kahlo to the Munch Museum</h3>
+      <p>Alongside personalisation we ran a curated marketplace of licensed imagery, from museums and estates through to contemporary artists my co-founders brought in. The artwork was highly desirable and aspirational, and it set the quality bar, but it never scaled the way personalisation did. What it did do was prove we could meet a serious content owner's standard. That turned out to matter.</p>
+      <div class="chips">
+        <span class="chip">Frida Kahlo</span>
+        <span class="chip">The Munch Museum</span>
+        <span class="chip">Licensed contemporary artists</span>
+        <span class="chip">Curated, artist-led marketplace</span>
+      </div>
+    </div>
+
+    <div style="margin-top:32px">
+      <div class="kicker" style="color:var(--muted)">The pipeline underneath</div>
+      <div class="journey">
+        <div class="j-stage">
+          <div class="j-band s1"><div class="j-no">Step 1</div><h3>Choose or create</h3><div class="j-line">Browse licensed art, or connect your socials and design your own.</div></div>
+          <div class="j-caps"><div class="j-cap lead">Custom design UI</div><div class="j-cap">Social image import</div><div class="j-cap">Licensed art catalogue</div></div>
+        </div>
+        <div class="j-arrow">&rarr;</div>
+        <div class="j-stage">
+          <div class="j-band s2"><div class="j-no">Step 2</div><h3>Ingest</h3><div class="j-line">Our backend pulled the imagery in and prepared it for print.</div></div>
+          <div class="j-caps"><div class="j-cap">API image ingestion</div><div class="j-cap">Processing &amp; print-ready pipeline</div><div class="j-cap">Order routing</div></div>
+        </div>
+        <div class="j-arrow">&rarr;</div>
+        <div class="j-stage">
+          <div class="j-band s3"><div class="j-no">Step 3</div><h3>Print</h3><div class="j-line">Dye-sublimation onto polycarbonate, in our own workshop.</div></div>
+          <div class="j-caps"><div class="j-cap lead">Licensed dye-sub system</div><div class="j-cap">Brixton workshop &amp; team</div><div class="j-cap">Quality control</div></div>
+        </div>
+        <div class="j-arrow">&rarr;</div>
+        <div class="j-stage">
+          <div class="j-band s4"><div class="j-no">Step 4</div><h3>Ship</h3><div class="j-line">Packed and fulfilled worldwide.</div></div>
+          <div class="j-caps"><div class="j-cap">Own packaging</div><div class="j-cap">Global fulfilment</div><div class="j-cap lead">A real object, in someone's hands</div></div>
+        </div>
+      </div>
+      <p class="matrix-note">We licensed the highest-quality dye-sublimation system for polycarbonate and sourced the cases from Asia. Everything else, the front end, the backend, the ingestion, the packaging and fulfilment, we built and ran ourselves.</p>
+    </div>
+  </div>
+</section>
+
+<!-- THE MARKET -->
+<section id="market">
+  <div class="wrap">
+    <div class="kicker">03 · Finding the market</div>
+    <h2>Personalisation won, and it grew quickly</h2>
+    <div class="prose">
+      <p>We had a hypothesis about which door people would come through, and the market corrected it quickly. The licensed marketplace was admired; the personalisation product was what people actually bought. Being able to put your own photos onto a genuinely high-quality case, easily, turned out to be the thing.</p>
+      <p>And it grew exceptionally quickly. Three things compounded: the product itself was good enough that customers told other people about it, we were early to the segment so paid search was still cheap, and that early start let us build strong organic rankings. The reviews were the part I was proudest of. People do not write warm reviews about a phone case unless the object genuinely delighted them when they opened the box.</p>
+    </div>
+  </div>
+</section>
+
+<!-- THE PIVOT -->
+<section id="pivot">
+  <div class="wrap">
+    <div class="kicker">04 · The wall, and the pivot</div>
+    <h2>Sat on by an 800lb gorilla</h2>
+    <p class="lead">About a year in, our defensibility turned out to be far thinner than I had assumed. Competitors, PhotoBox among them, entered the category and started rapidly increasing their paid spend.</p>
+    <div class="prose">
+      <p>Frankly, they offered a worse personalisation experience, but it did not matter. They brought marketing muscle and brand presence we could not match, and our growth in the personalisation space plateaued. I had believed the product was the moat. It was not. That is a lesson I have never forgotten.</p>
+      <p>What rescued us came from a direction we had never planned for. Content owners started approaching us: the British Museum, Tate Modern, textile designers and artists who wanted a really high-quality product made with their content, to sell through their own channels and physical retail. The marketplace work had proven we could hit that bar. This trade business was higher-volume and more lucrative than we had imagined, and it grew to <strong>60% of revenue</strong>. It is what carried us into profit.</p>
+    </div>
+
+    <div class="mixwrap">
+      <div class="toggle" role="tablist" aria-label="Revenue mix over time" style="margin-bottom:16px">
+        <button id="rm-early" class="active" onclick="revMix('early')">Early</button>
+        <button id="rm-exit" onclick="revMix('exit')">At exit</button>
+      </div>
+      <div class="bar-seg" id="mixBar">
+        <div class="seg pers" id="segPers" style="flex:82">Personalisation</div>
+        <div class="seg mkt" id="segMkt" style="flex:18">Marketplace</div>
+        <div class="seg trade" id="segTrade" style="flex:0"></div>
+      </div>
+      <div class="mix-legend">
+        <span><i class="p"></i>Personalisation (direct to consumer)</span>
+        <span><i class="m"></i>Licensed marketplace</span>
+        <span><i class="t"></i>Trade / content owners</span>
+      </div>
+      <p class="bar-caption" id="mixCaption">Early on, personalisation carried the business and the trade line did not yet exist.</p>
+    </div>
+  </div>
+</section>
+
+<!-- LESSONS -->
+<section id="lessons">
+  <div class="wrap">
+    <div class="kicker">05 · What worked, what didn't, what I learned</div>
+    <h2>Where you start is not where you end</h2>
+    <p class="lead">The hardest part was not commercial. Three years in we had a profitable business earning good revenue. It just was not the business my co-founders had set out to build. When a Scottish print company approached us, selling was the right call, and we all went our separate ways proud of what we had made.</p>
+    <div class="lessons">
+      <div class="lesson win">
+        <h4>&check; Vertical integration paid off</h4>
+        <p>Owning the whole value chain, from the digital personalisation experience to our branded box landing on the doorstep, is what helped us deliver a quality product with high margins. Our cost base was instrumental in helping us to pivot when we needed to.</p>
+      </div>
+      <div class="lesson diff">
+        <h4>&circlearrowright; The product was not the moat</h4>
+        <p>I assumed our experience and quality made us defensible. A worse competitor with a bigger budget proved otherwise inside a year. Distribution and brand were the real moat, and I had underweighted both. It is the first question I now ask of any consumer business.</p>
+      </div>
+      <div class="pull">Bootstrapping a start-up is hard, building a consumer brand from scratch is even harder. <span>By the end of three years we were all exhausted.</span></div>
+      <div class="lesson win">
+        <h4>&check; The trade line, heard not forced</h4>
+        <p>The pivot to producing for content owners came from listening to inbound we had not gone looking for. The marketplace work had earned us credibility with serious institutions, and when they asked, we were ready. Some of those trade relationships became genuine partnerships over the years.</p>
+      </div>
+      <div class="lesson diff">
+        <h4>&circlearrowright; Building a real object is its own reward</h4>
+        <p>Not everything is a lesson in disguise. Taking an image all the way through to a physical thing someone loved, and reading the reviews that came back, was simply a joy to do. That care for the end product is not a nice-to-have in this category.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="wrap">
+    <p style="margin:0"><strong style="color:var(--ink)">Rob Kerr</strong> · CEO &amp; Co-founder, Giant Sparrows (2014–2017)</p>
+    <p class="src">Capability theme: Founder / Independent Practice · Source: founder recollection, July 2026. Draft: revenue figures directional; the early revenue split shown is illustrative, the 60% trade share at exit is confirmed.</p>
+  </div>
+</footer>
+
+<script>
+  function setMode(mode){
+    document.body.classList.toggle('mode-overview', mode==='overview');
+    document.body.classList.toggle('mode-deep', mode==='deep');
+    document.getElementById('btn-overview').classList.toggle('active', mode==='overview');
+    document.getElementById('btn-deep').classList.toggle('active', mode==='deep');
+    document.querySelectorAll('details.deep').forEach(function(d){ d.open = (mode==='deep'); });
+    if(mode==='overview'){ window.scrollTo({top:0,behavior:'smooth'}); }
+  }
+
+  // stat count-up
+  (function(){
+    var done=false;
+    function run(){
+      if(done) return; done=true;
+      document.querySelectorAll('.stat .num[data-count]').forEach(function(el){
+        var target=+el.getAttribute('data-count'), suffix=el.getAttribute('data-suffix')||'', t0=null, dur=1100;
+        function step(ts){
+          if(!t0)t0=ts; var p=Math.min((ts-t0)/dur,1);
+          var eased=1-Math.pow(1-p,3);
+          var v=Math.round(target*eased);
+          el.innerHTML = v.toLocaleString('en-GB') + (suffix?'<span class="suffix">'+suffix+'</span>':'');
+          if(p<1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      });
+    }
+    var band=document.querySelector('.stats');
+    if('IntersectionObserver' in window && band){
+      new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)run();});},{threshold:.4}).observe(band);
+    } else { run(); }
+  })();
+
+  // two engines toggle
+  function engineView(v){
+    document.getElementById('engine-pers').hidden = v!=='pers';
+    document.getElementById('engine-mkt').hidden  = v!=='mkt';
+    document.getElementById('ev-pers').classList.toggle('active', v==='pers');
+    document.getElementById('ev-mkt').classList.toggle('active', v==='mkt');
+  }
+
+  // revenue-mix toggle
+  function revMix(when){
+    var pers=document.getElementById('segPers'), mkt=document.getElementById('segMkt'), trade=document.getElementById('segTrade');
+    var cap=document.getElementById('mixCaption');
+    if(when==='early'){
+      pers.style.flex=82; pers.textContent='Personalisation';
+      mkt.style.flex=18;  mkt.textContent='Marketplace';
+      trade.style.flex=0; trade.textContent='';
+      cap.textContent='Early on, personalisation carried the business and the trade line did not yet exist.';
+    } else {
+      pers.style.flex=30; pers.textContent='Direct to consumer';
+      mkt.style.flex=10;  mkt.textContent='';
+      trade.style.flex=60; trade.textContent='Trade / content owners · 60%';
+      cap.textContent='By exit, the unplanned trade line was 60% of revenue and had carried the business into profit.';
+    }
+    document.getElementById('rm-early').classList.toggle('active', when==='early');
+    document.getElementById('rm-exit').classList.toggle('active', when==='exit');
+  }
+</script>
+</body>
+</html>
