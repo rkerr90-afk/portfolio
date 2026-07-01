@@ -1,0 +1,644 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Felix: an agent for event organisers | Rob Kerr</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    --ink:#15131f;
+    --body:#3a3650;
+    --muted:#6b6780;
+    --line:#e7e4ef;
+    --bg:#ffffff;
+    --surface:#faf9fc;
+    --surface-2:#f3f0f9;
+    --brand:#6d2a8c;
+    --brand-2:#c2186a;
+    --calm:#0e7490;
+    --alarm:#c2410c;
+    --warn:#b45309;
+    --shadow:0 1px 2px rgba(21,19,31,.04), 0 8px 24px rgba(21,19,31,.06);
+    --shadow-lg:0 24px 60px rgba(21,19,31,.12);
+    --radius:16px;
+    --maxw:980px;
+    --display:'Fraunces', Georgia, 'Times New Roman', serif;
+    --sans:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    font-family:var(--sans);
+    color:var(--body);
+    background:var(--bg);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  h1,h2,h3,h4{font-family:var(--display);color:var(--ink);font-weight:500;line-height:1.15;letter-spacing:-.01em}
+  p{margin:0 0 1.05em}
+  a{color:var(--brand);text-decoration:none}
+  a:hover{text-decoration:underline}
+  strong{color:var(--ink);font-weight:600}
+
+  /* ---- top bar ---- */
+  .topbar{
+    position:sticky;top:0;z-index:50;
+    background:rgba(255,255,255,.82);
+    backdrop-filter:saturate(160%) blur(12px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar .wrap{display:flex;align-items:center;gap:16px;height:60px}
+  .brandmark{font-family:var(--display);font-weight:600;color:var(--ink);font-size:16px;letter-spacing:-.01em}
+  .brandmark span{color:var(--brand-2)}
+  .nav{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
+  .nav a{font-size:13px;color:var(--muted);padding:6px 10px;border-radius:8px;font-weight:500}
+  .nav a:hover{color:var(--ink);background:var(--surface-2);text-decoration:none}
+
+  /* ---- view toggle ---- */
+  .toggle{
+    display:inline-flex;background:var(--surface-2);border-radius:999px;padding:3px;gap:2px;
+    border:1px solid var(--line);
+  }
+  .toggle button{
+    font-family:var(--sans);font-size:12.5px;font-weight:600;color:var(--muted);
+    border:0;background:transparent;padding:6px 14px;border-radius:999px;cursor:pointer;transition:.15s;
+  }
+  .toggle button.active{background:#fff;color:var(--brand);box-shadow:var(--shadow)}
+
+  /* ---- hero ---- */
+  .hero{
+    background:
+      radial-gradient(1200px 500px at 80% -10%, rgba(194,24,106,.10), transparent 60%),
+      radial-gradient(900px 500px at 0% 0%, rgba(109,42,140,.10), transparent 55%),
+      var(--surface);
+    border-bottom:1px solid var(--line);
+    padding:64px 0 56px;
+  }
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--brand);background:#fff;border:1px solid var(--line);
+    padding:6px 12px;border-radius:999px;margin-bottom:22px;
+  }
+  .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--brand-2)}
+  .hero h1{font-size:clamp(40px,7vw,72px);margin:0 0 6px;letter-spacing:-.02em}
+  .subtitle{font-family:var(--display);font-size:clamp(19px,2.6vw,26px);color:var(--brand);font-weight:500;margin:0 0 22px}
+  .hook{font-size:clamp(17px,2.3vw,21px);color:var(--body);max-width:62ch;margin:0 0 28px}
+  .hook b{color:var(--ink);font-weight:600}
+  .meta{display:flex;gap:28px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+  .meta div span{display:block;color:var(--ink);font-weight:600;font-family:var(--display);font-size:15px;margin-top:2px}
+
+  /* ---- stat band ---- */
+  .stats{padding:40px 0}
+  .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .stat{
+    background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+    padding:22px 20px;box-shadow:var(--shadow);
+  }
+  .stat .num{font-family:var(--display);font-size:clamp(28px,4vw,40px);font-weight:600;color:var(--ink);line-height:1}
+  .stat .num .suffix{color:var(--brand-2)}
+  .stat .lbl{font-size:13px;color:var(--muted);margin-top:10px;line-height:1.4}
+  @media(max-width:760px){.stat-grid{grid-template-columns:repeat(2,1fr)}}
+
+  /* ---- sections ---- */
+  section{padding:48px 0;border-top:1px solid var(--line)}
+  .kicker{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--brand-2);margin-bottom:12px}
+  section h2{font-size:clamp(24px,3.4vw,34px);margin:0 0 20px;max-width:26ch}
+  .lead{font-size:18px;color:var(--body);max-width:62ch}
+  .prose{max-width:64ch}
+  .prose p{font-size:16.5px}
+
+  /* summary callout */
+  .summary-card{
+    background:linear-gradient(180deg,var(--surface),#fff);
+    border:1px solid var(--line);border-radius:20px;padding:32px 32px 8px;box-shadow:var(--shadow);
+  }
+  @media(max-width:620px){.summary-card{padding:24px 22px 4px}}
+
+  /* deep accordions */
+  details.deep{border:1px solid var(--line);border-radius:14px;margin-top:20px;background:#fff;box-shadow:var(--shadow)}
+  details.deep summary{
+    list-style:none;cursor:pointer;padding:15px 20px;font-size:13.5px;font-weight:600;color:var(--brand);
+    display:flex;align-items:center;gap:8px;user-select:none;
+  }
+  details.deep summary::-webkit-details-marker{display:none}
+  details.deep summary .chev{transition:.2s;font-size:11px}
+  details.deep[open] summary .chev{transform:rotate(90deg)}
+  details.deep summary:hover{background:var(--surface)}
+  .deep-content{padding:4px 22px 22px;font-size:15px;max-width:68ch}
+  .deep-content ul{margin:0 0 12px;padding-left:18px}
+  .deep-content li{margin-bottom:8px}
+  .deep-content p{font-size:15px}
+
+  /* failure-surface migration */
+  .migration{margin-top:26px}
+  .mig-stack{display:flex;flex-direction:column;gap:10px;margin:18px 0}
+  .mig-layer{
+    display:flex;align-items:center;gap:14px;border:1px solid var(--line);border-radius:13px;
+    padding:18px 20px;background:#fff;color:var(--muted);transition:.2s;position:relative;
+  }
+  .mig-layer .mig-name{font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink)}
+  .mig-layer .mig-sub{font-size:12.5px;margin-left:auto;color:var(--muted)}
+  .mig-layer .mig-badge{
+    margin-left:auto;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+    color:#fff;background:rgba(255,255,255,.22);padding:5px 11px;border-radius:8px;display:none;
+  }
+  .mig-layer.live{
+    background:linear-gradient(135deg,var(--brand),var(--brand-2));border-color:transparent;
+    box-shadow:0 10px 30px rgba(109,42,140,.22);
+  }
+  .mig-layer.live .mig-name{color:#fff}
+  .mig-layer.live .mig-sub{display:none}
+  .mig-layer.live .mig-badge{display:inline-block}
+  .mig-detail{
+    background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--brand-2);
+    border-radius:13px;padding:20px 22px;
+  }
+  .mig-detail h4{margin:0 0 8px;font-size:17px}
+  .mig-detail p{margin:0;font-size:15px;max-width:66ch}
+
+  /* calm / panic toggle */
+  .cp{margin-top:24px}
+  .chat{
+    margin-top:18px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:22px;display:flex;flex-direction:column;gap:12px;
+  }
+  .bubble{padding:13px 17px;border-radius:16px;font-size:15px;max-width:80%;line-height:1.5}
+  .bubble.user{align-self:flex-end;background:#fff;border:1px solid var(--line);color:var(--ink);border-bottom-right-radius:5px}
+  .bubble.bot{align-self:flex-start;border-bottom-left-radius:5px;transition:.2s}
+  .bubble.bot.calm{background:#ecfeff;border:1px solid #a5e8f0;color:#0c4a52}
+  .bubble.bot.panic{background:#fff1eb;border:1px solid #fcc6ab;color:#7c2d12}
+  .cp-meta{font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-bottom:4px;opacity:.75}
+  .judge{
+    margin-top:14px;background:#15131f;color:#fff;border-radius:14px;padding:18px 22px;
+    display:none;
+  }
+  .judge.show{display:block}
+  .judge .jl{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#f0a6cf;margin-bottom:8px}
+  .judge p{margin:0;font-family:var(--display);font-size:18px;line-height:1.4}
+  .cp-note{font-size:12.5px;color:var(--muted);margin-top:12px;font-style:italic}
+
+  /* rule explorer */
+  .rule-rail{display:flex;gap:9px;overflow-x:auto;padding:6px 2px 16px;scroll-snap-type:x proximity}
+  .rule-chip{
+    flex:0 0 auto;scroll-snap-align:start;border:1px solid var(--line);background:#fff;border-radius:12px;
+    padding:11px 15px;cursor:pointer;text-align:left;transition:.15s;min-width:150px;font-family:var(--sans);
+  }
+  .rule-chip .rn{font-family:var(--display);font-weight:600;color:var(--ink);font-size:14.5px;line-height:1.1}
+  .rule-chip .rt{font-size:11.5px;color:var(--muted);margin-top:4px;line-height:1.3}
+  .rule-chip:hover{border-color:var(--brand);transform:translateY(-1px)}
+  .rule-chip.active{border-color:var(--brand);box-shadow:0 0 0 3px rgba(109,42,140,.12);
+    background:linear-gradient(135deg,rgba(109,42,140,.06),rgba(194,24,106,.06))}
+  .rule-detail{
+    display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:6px;background:#fff;
+    border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);
+  }
+  @media(max-width:620px){.rule-detail{grid-template-columns:1fr}}
+  .rule-col{padding:22px 24px}
+  .rule-col.caught{background:#fff1eb;border-right:1px solid var(--line)}
+  @media(max-width:620px){.rule-col.caught{border-right:0;border-bottom:1px solid var(--line)}}
+  .rule-col h4{margin:0 0 10px;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+  .rule-col.caught h4{color:var(--alarm)}
+  .rule-col.became h4{color:var(--calm)}
+  .rule-col p{margin:0;font-size:14.5px;color:var(--body)}
+
+  /* eval scoreboard */
+  .scoreboard{display:flex;flex-direction:column;gap:12px;margin:6px 0 4px}
+  .sb-row{display:flex;align-items:center;gap:14px}
+  .sb-l{flex:0 0 120px;font-size:13.5px;color:var(--ink);font-weight:600}
+  .sb-track{flex:1;height:24px;background:var(--surface-2);border-radius:7px;overflow:hidden}
+  .sb-fill{height:100%;border-radius:7px;background:linear-gradient(90deg,var(--brand),var(--brand-2))}
+  .sb-v{flex:0 0 42px;text-align:right;font-family:var(--display);font-weight:600;color:var(--ink);font-size:15px}
+  .sb-row.low .sb-fill{background:linear-gradient(90deg,var(--warn),var(--alarm))}
+  .sb-row.low .sb-l, .sb-row.low .sb-v{color:var(--alarm)}
+
+  /* lessons */
+  .lessons{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:8px}
+  @media(max-width:760px){.lessons{grid-template-columns:1fr}}
+  .lesson{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+  .lesson h4{font-size:16px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+  .lesson p{font-size:14.5px;margin:0}
+  .lesson.win{border-top:3px solid var(--calm)}
+  .lesson.diff{border-top:3px solid var(--warn)}
+  .pull{
+    grid-column:1/-1;background:var(--ink);color:#fff;border-radius:var(--radius);padding:28px 32px;
+    font-family:var(--display);font-size:clamp(19px,2.6vw,26px);line-height:1.3;font-weight:500;
+  }
+  .pull span{color:#f0a6cf}
+
+  /* overview/deep behaviour */
+  body.mode-overview .overview-hidden{display:none}
+
+  .impact{margin-top:26px;background:linear-gradient(135deg,rgba(109,42,140,.06),rgba(194,24,106,.06));border:1px solid var(--line);border-left:3px solid var(--brand-2);border-radius:14px;padding:22px 26px}
+  .impact-k{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--brand-2);margin-bottom:8px}
+  .impact p{margin:0;font-size:16px;color:var(--body);max-width:68ch}
+
+  .footer{padding:48px 0 64px;border-top:1px solid var(--line);color:var(--muted);font-size:13.5px}
+  .footer a{color:var(--brand)}
+  .src{font-size:12.5px;color:var(--muted);margin-top:10px}
+</style>
+</head>
+<body class="mode-overview">
+
+<div class="topbar">
+  <div class="wrap">
+    <div class="brandmark">Rob Kerr <span>/</span> Case study</div>
+    <nav class="nav overview-hidden">
+      <a href="#context">Context</a>
+      <a href="#build">The build</a>
+      <a href="#evals">Evals</a>
+      <a href="#catch">The catch</a>
+      <a href="#fixes">The fixes</a>
+      <a href="#lessons">Lessons</a>
+    </nav>
+    <div class="toggle" style="margin-left:auto" role="tablist" aria-label="Reading depth">
+      <button id="btn-overview" class="active" onclick="setMode('overview')">Overview</button>
+      <button id="btn-deep" onclick="setMode('deep')">Deep dive</button>
+    </div>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow"><span class="dot"></span> AI Automation &amp; Agentic Systems</span>
+    <h1>Felix</h1>
+    <div class="subtitle">An agent for event organisers</div>
+    <p class="hook">Felix runs a small events business in London, ten to twelve nights a month, on his own. I built him an agent to wire his promotions together and tell him where his ticket sales actually came from. This is the story of what building it taught me: how the architecture forced me into <b>evals</b>, and how a stronger model, acting as judge, caught my agent having a panic attack on a friend's behalf.</p>
+    <div class="meta">
+      <div>Context<span>Independent practice</span></div>
+      <div>Client<span>A friend's events business, London</span></div>
+      <div>Build<span>Telegram agent + tooling, solo</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="stats">
+  <div class="wrap">
+    <div class="stat-grid">
+      <div class="stat"><div class="num">10&ndash;12</div><div class="lbl">events a month, run solo by one person</div></div>
+      <div class="stat"><div class="num" data-count="4">4</div><div class="lbl">data sources mapped, question by question, into capability maps</div></div>
+      <div class="stat"><div class="num" data-count="60">60</div><div class="lbl">golden questions the agent is now tested against</div></div>
+      <div class="stat"><div class="num">2</div><div class="lbl">models: one cheap by default, one smart on demand, routed by intent</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SUMMARY -->
+<section id="summary" style="border-top:0">
+  <div class="wrap">
+    <div class="summary-card">
+      <div class="kicker">The short version</div>
+      <div class="prose">
+        <p>Felix is a close friend who runs a small events business in London, ten to twelve nights a month, on his own. He promotes every one of them across email, WhatsApp, Instagram and his website, with no real idea which channel sells a single ticket. I set out to build him an agent that wired everything together, ran his promotions, and learned where his sales actually came from.</p>
+        <p>I built it twice. The first version was a conventional state machine with the language model bolted on as a garnish. It was brittle. The second was an agent, with the model doing the reasoning and tools doing the fetching. That was the better system, but it moved the hard part somewhere I hadn't expected, and then somewhere I couldn't see at all.</p>
+        <p>Testing that invisible layer is where I taught myself evals. I'd been running questions past the bot and eyeballing the answers without knowing the practice had a name. The eval caught something I never thought to look for: under partial data, the agent stopped sounding like a chief of staff and started sounding like a panic attack. Fixing that, in the prompt and in the model routing, is the real subject here. It's also the discipline I now use in professional work.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTEXT -->
+<section id="context">
+  <div class="wrap">
+    <div class="kicker">01 &middot; Context</div>
+    <h2>A one-man band, flying blind on attribution</h2>
+    <p class="lead">Felix's problem was never effort. It was visibility. When a night sold well he couldn't tell you why, and when it sold slowly he couldn't tell you where to push.</p>
+    <div class="prose">
+      <p>He runs ecstatic dance and movement nights with a real community around them, promoted across five WhatsApp groups, a thousand-odd person mailing list, Instagram, and his own site. Ticketing sits on one platform, email on another, the links scattered across channels that report nothing back. So every cycle he was promoting hard and guessing, with no thread connecting a WhatsApp share to a ticket sold.</p>
+      <p>The idea was a mobile-first agent, living in Telegram where Felix already was, that connected his ticketing, his email, the WhatsApp links and the site into one loop. It would run his promotions, track every link, and feed the attribution back to him, so each cycle taught the next: see what worked, lean into it, learn, lean in again. And because Felix wanted a colleague rather than a lecture, the agent had to advise like someone who actually knew event marketing. So part of the build was research, a real read of email and WhatsApp promotion best practice, baked into the agent's context so its advice came from current practice rather than vibes.</p>
+    </div>
+    <details class="deep">
+      <summary><span class="chev">&#9654;</span> The reinforcing loop I was actually building</summary>
+      <div class="deep-content">
+        <p>The product thesis was a flywheel, not a dashboard. Most analytics tools stop at showing you a number. The point here was to close the loop: the agent runs a promotion, tracks the clicks per channel, watches what converts, and folds that back into the next recommendation. Over enough cycles, Felix's sense of his own channels gets sharper and the agent's advice gets more specific to his business in particular.</p>
+        <p>That framing mattered for the build, because it meant the agent needed memory and a feedback loop from day one, not as a later feature. It logs what it recommended, an evening job resolves those recommendations against real outcomes, and a nightly pass extracts patterns into the agent's long-term memory of Felix's business.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- THE FIRST BUILD -->
+<section id="build">
+  <div class="wrap">
+    <div class="kicker">02 &middot; The first build</div>
+    <h2>I built it as a state machine. It was brittle.</h2>
+    <p class="lead">The obvious way to make a bot reliable is to make it deterministic. So the first version was a workflow engine, and the model only smoothed the wording.</p>
+    <div class="prose">
+      <p>It had a scripted onboarding, a scenario engine with a state for every situation Felix might be in, and a content pipeline that scored and generated copy. The language model sat on top as a garnish. Every situation Felix could land in was a branch I had to anticipate and write by hand. Miss one and the bot fell over or said something wooden.</p>
+      <p>The trouble with that shape is that the world has more situations than you can enumerate. The failure lived in my branching logic, and there was always another edge case waiting. I was spending most of my time covering cases rather than making the thing genuinely useful, and the model, the most capable part of the whole system, was reduced to tidying sentences.</p>
+    </div>
+    <details class="deep">
+      <summary><span class="chev">&#9654;</span> What the deterministic version actually contained</summary>
+      <div class="deep-content">
+        <p>The first architecture carried a five-day scripted onboarding flow, a seventeen-state scenario engine that tried to classify which situation a client was in, and a content engine with a scoring model, seven copy angles and a multi-layer prompt. Roughly fifty Python files and somewhere near nineteen thousand lines, most of it written to anticipate situations rather than reason about them.</p>
+        <p>It worked, in the narrow sense that the happy paths ran. But it was expensive to extend, fragile at the edges, and the effort of maintaining the branches scaled with Felix's unpredictability, which is to say without limit.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- THE SHIFT -->
+<section id="shift">
+  <div class="wrap">
+    <div class="kicker">03 &middot; The shift</div>
+    <h2>The fix moved the problem. Twice.</h2>
+    <p class="lead">So I turned it inside out. Instead of code that decided what to do with the model smoothing the edges, I made the model the thing that reasons, and gave it tools to fetch data and take actions.</p>
+    <div class="prose">
+      <p>The agent was better straight away: more capable, more natural to talk to, and a far smaller codebase. But brittleness turned out to be conserved. It didn't disappear when I changed architecture. It relocated.</p>
+      <p>With the reasoning now in the model, the failures moved to the tools. The agent was only ever as good as the data its tools handed it, and messy or partial tool output was where things broke. So I spent the next stretch making the tools solid, returning clean, well-shaped, trustworthy data. And when I'd done that, the brittleness moved one last time, to the model's own reasoning: how it behaved when data was missing, whether it actually followed the instructions in the prompt. That layer is invisible. You can't read it off the code, and you can't read it off the tool outputs. The only way to see it is to test it.</p>
+    </div>
+
+    <div class="migration">
+      <div class="toggle mig-toggle" role="tablist" aria-label="Build stage">
+        <button id="mg-0" class="active" onclick="migStage(0)">1 &middot; State machine</button>
+        <button id="mg-1" onclick="migStage(1)">2 &middot; Agent core</button>
+        <button id="mg-2" onclick="migStage(2)">3 &middot; Tools hardened</button>
+      </div>
+      <div class="mig-stack">
+        <div class="mig-layer" id="mig-code"><span class="mig-name">Your code</span><span class="mig-sub">branching logic, hand-written cases</span><span class="mig-badge">brittleness lives here</span></div>
+        <div class="mig-layer" id="mig-tools"><span class="mig-name">The tools</span><span class="mig-sub">data fetching and shaping</span><span class="mig-badge">brittleness lives here</span></div>
+        <div class="mig-layer" id="mig-model"><span class="mig-name">The model's reasoning</span><span class="mig-sub">judgement under uncertainty</span><span class="mig-badge">brittleness lives here</span></div>
+      </div>
+      <div class="mig-detail" id="migDetail"></div>
+    </div>
+
+    <details class="deep">
+      <summary><span class="chev">&#9654;</span> The honest trade of going agent-first</summary>
+      <div class="deep-content">
+        <p>The agent rewrite roughly halved the codebase, from about fifty files to thirty, and deleted whole categories of code: the scripted onboarding, the seventeen-state scenario engine, the scoring-and-angles content pipeline. The data layer, the link tracking and the feedback loop stayed. Reasoning that used to live in branches now lived in the prompt and the context.</p>
+        <p>It isn't a free trade. A deterministic checker formats the same way every time; an agent varies. When it says something wrong, debugging is no longer reading a code path, it's reading the prompt and the context and working out why the model reasoned the way it did. The mitigation is to keep the tools deterministic and to log everything, so the one part that can hallucinate is fenced by data it can't make up. That is the whole reason the next step, testing the reasoning itself, became unavoidable.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- EVALS -->
+<section id="evals">
+  <div class="wrap">
+    <div class="kicker">04 &middot; Discovering evals</div>
+    <h2>To see the invisible layer, I had to test it. That's how I found evals.</h2>
+    <p class="lead">Once the tools were solid and the agent was working, the only way to know if it was any good was to ask it things and look hard at what came back.</p>
+    <div class="prose">
+      <p>I sat down with Felix and we went through the questions he'd actually ask: how's this night selling, who should I email, what should I post. I wrote them down. That list was a golden set, though I didn't know the term yet. As I ran the questions past Claude, I asked whether there was a formal way to test an agent. That's where evals surfaced. I read into it properly, wrote up a methodology for the project, and did it for real: a golden set per data source, run through the bot, scored pass, partial or fail, with a stronger model acting as the judge.</p>
+      <p>The thing that struck me later is that the golden set was user discovery wearing different clothes. The most ordinary product habit I have, sitting with a user and learning what they'll ask, turned out to be the same muscle the eval needed. I'd built the test before I had the word for it. That's the part worth sitting with: I didn't adopt evals as a framework. I backed into them because the architecture left me no other way to know if the thing worked.</p>
+    </div>
+    <details class="deep">
+      <summary><span class="chev">&#9654;</span> The method, and the number I'd rather not show you</summary>
+      <div class="deep-content">
+        <p>The methodology ran in three phases. First, capability mapping: for each data source, write out the full space of questions a client would ask and classify every one. Answerable today, partial, or not answerable, and for each "not answerable", say why: an <strong>API limitation</strong> (the data doesn't exist), a <strong>tooling gap</strong> (it exists but I don't fetch it), or a <strong>deliberate choice</strong> (I could build it and have decided not to). That last category is pure product management hiding inside an eval: deciding what not to build, and writing down the reason so it doesn't get relitigated.</p>
+        <p>Then gap prioritisation, then the golden set and the eval sessions themselves: state the question, run it, react before analysing, then a joint verdict with a failure category. Any failure category that showed up three or more times became a development priority.</p>
+        <p>The scores were honest, including the one I'd rather not show:</p>
+        <div class="scoreboard">
+          <div class="sb-row"><span class="sb-l">Wix Events</span><div class="sb-track"><div class="sb-fill" style="width:71%"></div></div><span class="sb-v">71%</span></div>
+          <div class="sb-row"><span class="sb-l">Mailchimp</span><div class="sb-track"><div class="sb-fill" style="width:81%"></div></div><span class="sb-v">81%</span></div>
+          <div class="sb-row low"><span class="sb-l">UTM / links</span><div class="sb-track"><div class="sb-fill" style="width:14%"></div></div><span class="sb-v">14%</span></div>
+          <div class="sb-row"><span class="sb-l">Cross-source</span><div class="sb-track"><div class="sb-fill" style="width:38%"></div></div><span class="sb-v">38%</span></div>
+        </div>
+        <p style="margin-top:14px">The 14% wasn't a bug to bury. It was the eval doing its job: telling me the truth about what the system genuinely couldn't do. Felix's ticketing platform exposes no attribution on orders, so the chain from "which channel got the click" to "which channel sold the ticket" is broken at the source. No prompt fixes that. I'd rather know, and so would Felix.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- THE CATCH -->
+<section id="catch">
+  <div class="wrap">
+    <div class="kicker">05 &middot; The catch</div>
+    <h2>I asked the eval to grade accuracy. It caught a panic attack.</h2>
+    <p class="lead">When the data came back clean, the agent was calm and useful. When it came back partial, ticket counts but no prices, this week's orders but no baseline, it catastrophised.</p>
+
+    <div class="cp">
+      <div class="toggle cp-toggle" role="tablist" aria-label="Data state">
+        <button id="cp-complete" class="active" onclick="cpState('complete')">Data complete</button>
+        <button id="cp-partial" onclick="cpState('partial')">Data partial</button>
+      </div>
+      <div class="chat">
+        <div class="bubble user">How's the Heartwave night selling?</div>
+        <div class="bubble bot calm" id="cpBot"></div>
+      </div>
+      <div class="judge" id="cpJudge">
+        <div class="jl">The judge, reviewing the partial-data reply</div>
+        <p>&ldquo;That's not a chief of staff. That's a panic attack in text form. Felix would be alarmed reading this, and it's based on one week of data for events that are still weeks away.&rdquo;</p>
+      </div>
+      <p class="cp-note">Partial-data replies are verbatim from the eval set. The calm version is representative.</p>
+    </div>
+
+    <div class="prose" style="margin-top:28px">
+      <p>The judge's verdict was the cleanest line I got all session. And I hadn't asked it to grade tone. I'd asked it to grade accuracy. One of the partial-data replies even invented a capability: <strong>the click-to-sale conversion isn't moving the needle</strong>, a metric the agent can't compute, because the data to compute it doesn't exist. Faced with a gap, the model filled it with a sentence that sounded like a number.</p>
+      <p>Here's why it happens. Deterministic software fails silently or loudly, and the error is just the error. A model hits uncertainty and fills the gap, and what it fills it with is learned from us. People who are uncertain and under pressure hedge, over-explain, apologise, catastrophise. The model gives that back. It wasn't inventing facts so much as importing the wrong emotional register, reading "incomplete data" as a cue to escalate, in exactly the way an anxious junior employee would. Felix would have read it at 7am on a Tuesday.</p>
+    </div>
+  </div>
+</section>
+
+<!-- THE FIXES -->
+<section id="fixes">
+  <div class="wrap">
+    <div class="kicker">06 &middot; The fixes</div>
+    <h2>Two kinds of fix, and telling them apart is the skill</h2>
+    <p class="lead">Some of what the eval caught was a prompt problem. Each failure became a named rule the agent now carries. Browse them: every one traces back to something the eval surfaced.</p>
+
+    <div class="rule-rail" id="ruleRail"></div>
+    <div class="rule-detail" id="ruleDetail"></div>
+
+    <div class="prose" style="margin-top:28px">
+      <p>By the end, the system prompt had quietly become the specification, and the eval is what wrote it. None of those rules existed in advance. Each one is the scar of a specific failure the test surfaced.</p>
+      <p>But some failures aren't promptable. The cheap default model is reliably weak at date arithmetic and multi-step planning, and no amount of rewording fixes that. So the deeper fix is architectural: route by intent. The agent runs on the cheap model by default, and when it detects campaign planning, the workflow that leans hardest on reasoning, it upgrades to a stronger model for the rest of that conversation and gives it more room to work. Cheap when it can be, capable when it has to be. You can usually tell which workflow needs which by the tools the agent is reaching for.</p>
+    </div>
+
+    <details class="deep">
+      <summary><span class="chev">&#9654;</span> How the routing actually works</summary>
+      <div class="deep-content">
+        <p>The default is the cheap model. The upgrade triggers on intent expressed through tool use: when the agent calls the campaign-planning tools, it switches to the stronger model for the remainder of that conversation, lifts the tool-call budget from three to six, and widens the short-term memory from six turns to fourteen so a multi-step planning session doesn't lose its thread. The conversation stays upgraded until it goes quiet, then later sessions drop back to cheap.</p>
+        <p>The trigger earned its place. In one exchange Felix said "Thursday the 16th"; the cheap model confidently called that "after the event", then offered "the Thursday before" as the 9th, which is a Wednesday. The stronger model handles that reliably. Rather than pay for it on every message, you pay for it only on the workflow that needs it, and you detect that workflow by the tools in play, not by trying to classify the user's sentence.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- LESSONS -->
+<section id="lessons">
+  <div class="wrap">
+    <div class="kicker">07 &middot; What it taught me</div>
+    <h2>The agent was the deliverable. The discipline was the point.</h2>
+    <p class="lead">No growth chart came out of this. What came out was a way of working that I didn't have before, learned on a friend's business with nothing riding on it but his 7am peace of mind.</p>
+
+    <div class="lessons">
+      <div class="lesson win">
+        <h4>&#10003; The golden set is just user discovery</h4>
+        <p>The most ordinary product habit I have, sitting with the user and learning what they'll ask, was the eval all along. I'd built the test before I knew the name. Evals aren't a new muscle for a product person. They're an old one, pointed at a system whose behaviour you can't read off the code.</p>
+      </div>
+      <div class="lesson win">
+        <h4>&#10003; Evals tell you the truth</h4>
+        <p>Including the truth you'd rather skip. The 14% on link attribution was the single most useful result of the session, because it named a real limit at the source rather than letting the agent paper over it with a confident sentence.</p>
+      </div>
+      <div class="lesson diff">
+        <h4>&#8635; Brittleness is conserved</h4>
+        <p>Going agent-first didn't remove the hard work, it relocated it: first to the tools, then to the model's reasoning. I'd planned for a finish line and got a relay. Worth knowing before you start, so the second and third legs don't feel like failure.</p>
+      </div>
+      <div class="lesson diff">
+        <h4>&#8635; Prompt problem or model problem?</h4>
+        <p>I lost time wording and rewording prompts at things only a bigger model could do. Some failures yield to a better instruction; some need a better model; some need a tool that returns real data. Sorting which is which is most of the craft, and getting it wrong is most of the wasted effort.</p>
+      </div>
+      <div class="pull">An LLM doesn't fail like software. It fails like a person. Which makes the temperament of your agent part of the product, <span>not decoration.</span></div>
+      <div class="lesson diff" style="grid-column:1/-1">
+        <h4>&#8635; Emotional register is a product surface</h4>
+        <p>When your client is talking to a model they don't know they're talking to, how it behaves under uncertainty is the relationship. The eval was the only thing standing between a panic attack in text form and Felix's phone on a Tuesday morning. Tone became a pass criterion, not just accuracy, and that's a permanent change to how I test anything built on a model.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONCLUSION -->
+<section id="short">
+  <div class="wrap">
+    <div class="kicker">08 &middot; In short</div>
+    <h2>The spec was something I discovered, not something I wrote</h2>
+    <div class="prose">
+      <p>I went in to build Felix a tool. I came out with a way of working. With deterministic software you can write the spec up front, because you can read the behaviour off the code. With an agent you can't, so you find the spec by testing: you watch what the thing does, you catch what it gets wrong, and you encode the correction. The golden set, the judge, the named rules, the model routing, all of it is one loop for arriving at a specification I couldn't have written in advance.</p>
+      <p>That's the part I keep. Not the agent itself, useful as it is to Felix, but the loop. The same discipline now travels into professional work, where the stakes are higher and the principle is identical. The architecture forced the question, the evals answered it, and the answer was never going to come from a document written before the system existed.</p>
+    </div>
+    <div class="impact">
+      <div class="impact-k">What I actually took away</div>
+      <p>I taught myself evals on a friend's events business, on my own time, with nothing on the line but whether Felix opened a calm message in the morning instead of an alarming one. That's the same discipline I now deploy professionally, on real enterprise systems.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="wrap">
+    <p style="margin:0"><strong style="color:var(--ink)">Rob Kerr</strong> &middot; Independent practice</p>
+    <p class="src">Capability theme: AI Automation &amp; Agentic Systems &middot; Built solo for a friend, shared with permission. Sources: the agent's system prompt, eval session logs, capability maps, and architecture notes. Client details abstracted; figures directional.</p>
+  </div>
+</footer>
+
+<script>
+  function setMode(mode){
+    document.body.classList.toggle('mode-overview', mode==='overview');
+    document.body.classList.toggle('mode-deep', mode==='deep');
+    document.getElementById('btn-overview').classList.toggle('active', mode==='overview');
+    document.getElementById('btn-deep').classList.toggle('active', mode==='deep');
+    document.querySelectorAll('details.deep').forEach(function(d){ d.open = (mode==='deep'); });
+    if(mode==='overview'){ window.scrollTo({top:0,behavior:'smooth'}); }
+  }
+
+  // stat count-up
+  (function(){
+    var done=false;
+    function run(){
+      if(done) return; done=true;
+      document.querySelectorAll('.stat .num[data-count]').forEach(function(el){
+        var target=+el.getAttribute('data-count'), t0=null, dur=1100;
+        function step(ts){
+          if(!t0)t0=ts; var p=Math.min((ts-t0)/dur,1);
+          var eased=1-Math.pow(1-p,3);
+          el.textContent = Math.round(target*eased).toLocaleString('en-GB');
+          if(p<1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      });
+    }
+    var band=document.querySelector('.stats');
+    if('IntersectionObserver' in window && band){
+      new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)run();});},{threshold:.4}).observe(band);
+    } else { run(); }
+  })();
+
+  // ---- failure-surface migration ----
+  var migStages=[
+    {layer:'mig-code', btn:'mg-0',
+     title:'The failure lives in your branching logic',
+     body:'Every situation is a branch you wrote by hand, and the model is a garnish on top. Miss a branch and the bot falls over. Solid in theory, until the next edge case you didn’t predict.'},
+    {layer:'mig-tools', btn:'mg-1',
+     title:'Reasoning moves to the model, so the failure moves to the tools',
+     body:'Now the model decides what to do, and it’s only as good as the data the tools hand it. Messy or partial tool output is where it breaks. The hard part relocated from my code to my tooling.'},
+    {layer:'mig-model', btn:'mg-2',
+     title:'Clean tools, so the failure is now in the reasoning itself',
+     body:'With the tools returning trustworthy data, the last place brittleness can hide is the model’s own judgement: how it behaves when data is missing, whether it follows the prompt. That layer is invisible. The only way to see it is to test it.'}
+  ];
+  function migStage(i){
+    var s=migStages[i];
+    ['mig-code','mig-tools','mig-model'].forEach(function(id){
+      document.getElementById(id).classList.toggle('live', id===s.layer);
+    });
+    ['mg-0','mg-1','mg-2'].forEach(function(id,j){
+      document.getElementById(id).classList.toggle('active', j===i);
+    });
+    document.getElementById('migDetail').innerHTML='<h4>'+s.title+'</h4><p>'+s.body+'</p>';
+  }
+  migStage(0);
+
+  // ---- calm / panic toggle ----
+  var cpData={
+    complete:{
+      cls:'calm',
+      meta:'Calm · full data',
+      text:'You’re at 5 of 70 sold with 38 days to go, so there’s runway. Nights like this tend to fill in the final fortnight, and your Core Community list converts best for them. Want me to draft a push to that segment to get it moving?'
+    },
+    partial:{
+      cls:'panic',
+      meta:'Panic · partial data',
+      text:'These ticket sales are dead on arrival. We’re seeing a serious loss on this event. Why have sales dropped off? The click-to-sale conversion isn’t moving the needle.'
+    }
+  };
+  function cpState(state){
+    var d=cpData[state], bot=document.getElementById('cpBot');
+    bot.className='bubble bot '+d.cls;
+    bot.innerHTML='<div class="cp-meta">'+d.meta+'</div>'+d.text;
+    document.getElementById('cpJudge').classList.toggle('show', state==='partial');
+    document.getElementById('cp-complete').classList.toggle('active', state==='complete');
+    document.getElementById('cp-partial').classList.toggle('active', state==='partial');
+  }
+  cpState('complete');
+
+  // ---- rule explorer ----
+  var rules=[
+    {n:'Tone', t:'opportunity, not alarm',
+     caught:'Under partial data the agent catastrophised: “dead on arrival”, “serious loss”. The judge called it a panic attack in text form.',
+     became:'Frame low numbers as an opportunity and a prompt to act. Ban the alarm words. Always offer a concrete next step.'},
+    {n:'No overreach', t:'support, don’t steer',
+     caught:'It told Felix to consider rescheduling or cancelling when the data was simply slow to arrive, and quizzed him with “what’s your plan?”',
+     became:'Never suggest rescheduling or cancelling. Offer help, don’t steer. Felix makes the decisions.'},
+    {n:'Data trust', t:'the tool is the truth',
+     caught:'It quoted stale figures from its background context instead of the live tool result, and hedged between two different numbers.',
+     became:'Tool data is the ground truth. If the tool didn’t return it, the agent doesn’t know it. Never hedge between two figures.'},
+    {n:'Attribution', t:'name the gap first',
+     caught:'It implied it could connect clicks to ticket sales (“the click-to-sale conversion isn’t moving the needle”). That data doesn’t exist: the ticketing platform exposes no attribution.',
+     became:'State the gap first: “I can see clicks, not purchases, those two systems aren’t connected yet.” Then offer clicks as the available proxy.'},
+    {n:'Channel claims', t:'earn the confidence',
+     caught:'It called a channel Felix’s “strongest” on the strength of a hunch in the brand profile and a handful of data points.',
+     became:'No “best channel” claims without at least 20 confirming data points. Thin evidence is “worth trying”, not “will work”.'},
+    {n:'No jargon', t:'plain words only',
+     caught:'Client messages leaked infrastructure terms: “UTM”, “attribution”, “tracked link”.',
+     became:'Never use infrastructure language with Felix. Say “link”, or describe the outcome in plain words.'},
+    {n:'Be opinionated', t:'hold the line',
+     caught:'The moment Felix pushed back, it folded and flipped its recommendation, looking like it had no conviction.',
+     became:'Hold the line using the marketing research. Acknowledge the concern, explain the reasoning, and only change your mind on genuinely new information.'}
+  ];
+  (function(){
+    var rail=document.getElementById('ruleRail'), detail=document.getElementById('ruleDetail');
+    if(!rail||!detail) return;
+    rules.forEach(function(r,i){
+      var b=document.createElement('button');
+      b.className='rule-chip';
+      b.innerHTML='<div class="rn">'+r.n+'</div><div class="rt">'+r.t+'</div>';
+      b.onclick=function(){show(i);};
+      rail.appendChild(b);
+    });
+    function show(i){
+      var r=rules[i];
+      Array.prototype.forEach.call(rail.children,function(c,j){c.classList.toggle('active',j===i);});
+      detail.innerHTML=
+        '<div class="rule-col caught"><h4>What the eval caught</h4><p>'+r.caught+'</p></div>'+
+        '<div class="rule-col became"><h4>The rule it became</h4><p>'+r.became+'</p></div>';
+    }
+    show(0);
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,753 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>sense_ — Case Study | Rob Kerr</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    --ink:#0c0e1a;
+    --body:#2a2d40;
+    --muted:#666980;
+    --line:#dde0ef;
+    --bg:#ffffff;
+    --surface:#f6f7fc;
+    --surface-2:#eceef8;
+    --brand:#1e40af;
+    --brand-2:#0891b2;
+    --occ:#1e40af;
+    --com:#b45309;
+    --sust:#059669;
+    --shadow:0 1px 2px rgba(12,14,26,.04), 0 8px 24px rgba(12,14,26,.06);
+    --shadow-lg:0 24px 60px rgba(12,14,26,.12);
+    --radius:16px;
+    --maxw:980px;
+    --display:'Fraunces', Georgia, 'Times New Roman', serif;
+    --sans:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    font-family:var(--sans);
+    color:var(--body);
+    background:var(--bg);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  h1,h2,h3,h4{font-family:var(--display);color:var(--ink);font-weight:500;line-height:1.15;letter-spacing:-.01em}
+  p{margin:0 0 1.05em}
+  a{color:var(--brand);text-decoration:none}
+  a:hover{text-decoration:underline}
+  strong{color:var(--ink);font-weight:600}
+
+  /* ---- top bar ---- */
+  .topbar{
+    position:sticky;top:0;z-index:50;
+    background:rgba(255,255,255,.85);
+    backdrop-filter:saturate(160%) blur(12px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar .wrap{display:flex;align-items:center;gap:16px;height:60px}
+  .brandmark{font-family:var(--display);font-weight:600;color:var(--ink);font-size:16px;letter-spacing:-.01em}
+  .brandmark span{color:var(--brand-2)}
+  .nav{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
+  .nav a{font-size:13px;color:var(--muted);padding:6px 10px;border-radius:8px;font-weight:500}
+  .nav a:hover{color:var(--ink);background:var(--surface-2);text-decoration:none}
+
+  /* ---- view toggle ---- */
+  .toggle{
+    display:inline-flex;background:var(--surface-2);border-radius:999px;padding:3px;gap:2px;
+    border:1px solid var(--line);
+  }
+  .toggle button{
+    font-family:var(--sans);font-size:12.5px;font-weight:600;color:var(--muted);
+    border:0;background:transparent;padding:6px 14px;border-radius:999px;cursor:pointer;transition:.15s;
+  }
+  .toggle button.active{background:#fff;color:var(--brand);box-shadow:var(--shadow)}
+
+  /* ---- hero ---- */
+  .hero{
+    background:
+      radial-gradient(1100px 500px at 85% -10%, rgba(8,145,178,.12), transparent 60%),
+      radial-gradient(900px 500px at 0% 0%, rgba(30,64,175,.10), transparent 55%),
+      var(--surface);
+    border-bottom:1px solid var(--line);
+    padding:64px 0 56px;
+  }
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--brand);background:#fff;border:1px solid var(--line);
+    padding:6px 12px;border-radius:999px;margin-bottom:22px;
+  }
+  .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--brand-2)}
+  .hero h1{font-size:clamp(34px,5.2vw,54px);margin:0 0 20px;max-width:18ch}
+  .hook{font-size:clamp(18px,2.4vw,22px);color:var(--body);max-width:60ch;margin:0 0 28px}
+  .hook b{color:var(--ink);font-weight:600}
+  .meta{display:flex;gap:28px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+  .meta div span{display:block;color:var(--ink);font-weight:600;font-family:var(--display);font-size:15px;margin-top:2px}
+
+  /* ---- stat band ---- */
+  .stats{padding:40px 0}
+  .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .stat{
+    background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+    padding:22px 20px;box-shadow:var(--shadow);
+  }
+  .stat .num{font-family:var(--display);font-size:clamp(26px,3.8vw,38px);font-weight:600;color:var(--ink);line-height:1}
+  .stat .num .suffix{color:var(--brand-2)}
+  .stat .lbl{font-size:13px;color:var(--muted);margin-top:10px;line-height:1.4}
+  @media(max-width:760px){.stat-grid{grid-template-columns:repeat(2,1fr)}}
+
+  /* ---- sections ---- */
+  section{padding:48px 0;border-top:1px solid var(--line)}
+  .kicker{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--brand-2);margin-bottom:12px}
+  section h2{font-size:clamp(24px,3.4vw,34px);margin:0 0 20px;max-width:24ch}
+  .lead{font-size:18px;color:var(--body);max-width:62ch}
+  .prose{max-width:64ch}
+  .prose p{font-size:16.5px}
+
+  /* summary callout */
+  .summary-card{
+    background:linear-gradient(180deg,var(--surface),#fff);
+    border:1px solid var(--line);border-radius:20px;padding:32px 32px 8px;box-shadow:var(--shadow);
+  }
+  @media(max-width:620px){.summary-card{padding:24px 22px 4px}}
+
+  /* ---- problem space toggle ---- */
+  .ps-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px}
+  .ps-tab{
+    font-family:var(--sans);font-size:13px;font-weight:600;
+    border:1px solid var(--line);background:#fff;border-radius:999px;
+    padding:8px 18px;cursor:pointer;color:var(--muted);transition:.15s;
+  }
+  .ps-tab:hover{color:var(--ink)}
+  .ps-tab.active.occ{border-color:var(--occ);color:var(--occ);background:rgba(30,64,175,.07)}
+  .ps-tab.active.com{border-color:var(--com);color:var(--com);background:rgba(180,83,9,.07)}
+  .ps-tab.active.sust{border-color:var(--sust);color:var(--sust);background:rgba(5,150,105,.07)}
+  .ps-panel{display:none}
+  .ps-panel.active{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  @media(max-width:700px){.ps-panel.active{grid-template-columns:1fr}}
+  .ps-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow)}
+  .ps-card h4{margin:0 0 8px;font-size:17px}
+  .ps-card p{font-size:14.5px;margin:0 0 12px;color:var(--body)}
+  .ps-card ul{margin:0;padding-left:18px;font-size:14px;color:var(--body)}
+  .ps-card li{margin-bottom:5px}
+  .ps-verdict{
+    grid-column:1/-1;display:flex;gap:14px;align-items:flex-start;
+    padding:16px 20px;border-radius:14px;border:1px solid;font-size:14.5px;
+  }
+  .ps-verdict .v-ic{font-size:20px;flex:0 0 auto;margin-top:1px}
+  .ps-verdict.chosen{border-color:var(--occ);background:rgba(30,64,175,.06);color:var(--body)}
+  .ps-verdict.not-chosen{border-color:var(--line);background:var(--surface);color:var(--muted)}
+  .ps-verdict strong{color:var(--ink)}
+
+  /* ---- hardware rail ---- */
+  .hw-rail{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 16px;scroll-snap-type:x proximity}
+  .hw-chip{
+    flex:0 0 auto;scroll-snap-align:start;
+    border:1px solid var(--line);background:#fff;border-radius:12px;
+    padding:12px 16px;cursor:pointer;text-align:center;transition:.15s;min-width:140px;font-family:var(--sans);
+  }
+  .hw-chip .hv{font-family:var(--display);font-weight:600;color:var(--ink);font-size:15px;line-height:1.2}
+  .hw-chip .hd{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.3}
+  .hw-chip:hover{border-color:var(--brand);transform:translateY(-1px)}
+  .hw-chip.active{border-color:var(--brand);box-shadow:0 0 0 3px rgba(30,64,175,.12);
+    background:linear-gradient(135deg,rgba(30,64,175,.06),rgba(8,145,178,.06))}
+  .hw-detail{
+    display:grid;grid-template-columns:160px 1fr;gap:24px;margin-top:6px;
+    background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+    padding:24px;box-shadow:var(--shadow);
+  }
+  @media(max-width:620px){.hw-detail{grid-template-columns:1fr;gap:16px}}
+  .hw-badge{
+    border-radius:14px;padding:18px;color:#fff;display:flex;flex-direction:column;justify-content:center;
+    background:linear-gradient(135deg,var(--brand),var(--brand-2));
+  }
+  .hw-badge .hbv{font-family:var(--display);font-size:22px;font-weight:600;line-height:1.2}
+  .hw-badge .hbd{font-size:12px;opacity:.9;margin-top:6px}
+  .hw-badge .hbl{font-size:11px;text-transform:uppercase;letter-spacing:.08em;margin-top:10px;line-height:1.5;
+    background:rgba(255,255,255,.2);padding:5px 11px;border-radius:8px;align-self:flex-start}
+  .hw-feats h4{margin:2px 0 12px;font-size:15px}
+  .hw-feats ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+  .hw-feats li{font-size:14px;color:var(--body);padding-left:18px;position:relative}
+  .hw-feats li::before{content:"";position:absolute;left:0;top:9px;width:6px;height:6px;border-radius:50%;background:var(--brand-2)}
+  .hw-feats li.hl{color:var(--brand);font-weight:600}
+
+  /* ---- app sections ---- */
+  .app-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:8px}
+  @media(max-width:660px){.app-grid{grid-template-columns:1fr}}
+  .app-tile{
+    background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+    padding:20px 22px;box-shadow:var(--shadow);
+  }
+  .app-tile .at-no{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+    color:var(--brand-2);margin-bottom:6px}
+  .app-tile h4{font-size:16px;margin:0 0 8px}
+  .app-tile p{font-size:14px;color:var(--body);margin:0}
+
+  /* ---- pilot clients ---- */
+  .pilot-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:8px}
+  @media(max-width:660px){.pilot-grid{grid-template-columns:repeat(2,1fr)}}
+  .pilot-card{
+    background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px 18px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:4px;
+  }
+  .pilot-card .pc-name{font-family:var(--display);font-weight:600;font-size:15px;color:var(--ink)}
+  .pilot-card .pc-tag{font-size:11.5px;color:var(--muted)}
+  .pilot-badge{
+    display:inline-flex;align-items:center;gap:6px;margin-top:6px;
+    font-size:11.5px;font-weight:600;color:var(--sust);
+    background:rgba(5,150,105,.08);border:1px solid rgba(5,150,105,.2);
+    padding:3px 9px;border-radius:999px;
+  }
+  .pilot-badge::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--sust)}
+  .pilot-total{
+    margin-top:16px;padding:14px 18px;border-radius:12px;
+    background:linear-gradient(135deg,rgba(30,64,175,.06),rgba(8,145,178,.06));
+    border:1px solid var(--line);font-size:14.5px;color:var(--body);
+  }
+  .pilot-total strong{color:var(--ink)}
+
+  /* ---- covid inflection ---- */
+  .covid{
+    background:linear-gradient(135deg,rgba(180,83,9,.06),rgba(217,119,6,.04));
+    border:1px solid rgba(180,83,9,.2);border-radius:20px;padding:32px;margin-top:8px;
+  }
+  .covid-head{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+  .covid-ic{font-size:28px}
+  .covid-head h3{margin:0;font-size:22px;color:var(--ink)}
+  .covid-head .ch-date{font-size:12px;font-weight:600;color:#b45309;text-transform:uppercase;letter-spacing:.07em;margin-top:4px}
+  .covid-body{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  @media(max-width:640px){.covid-body{grid-template-columns:1fr}}
+  .covid-col h4{font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin:0 0 10px;color:var(--muted)}
+  .covid-col ul{margin:0;padding-left:18px;font-size:15px;color:var(--body)}
+  .covid-col li{margin-bottom:8px}
+
+  /* ---- phases ---- */
+  .phases{display:flex;flex-direction:column;gap:18px;margin-top:8px}
+  .phase{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .phase-top{display:flex;gap:18px;padding:24px 26px;align-items:flex-start}
+  @media(max-width:620px){.phase-top{flex-direction:column;gap:12px;padding:20px}}
+  .phase-no{
+    flex:0 0 auto;width:44px;height:44px;border-radius:12px;
+    background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;
+    display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:600;font-size:19px;
+  }
+  .phase-body{flex:1}
+  .phase-body h3{font-size:20px;margin:0 0 6px}
+  .phase-body .tag{font-size:12px;font-weight:600;color:var(--brand-2);text-transform:uppercase;letter-spacing:.06em}
+  .phase-body p{font-size:15.5px;margin:8px 0 0}
+  .phase-metric{flex:0 0 auto;text-align:right;padding-left:16px;border-left:1px solid var(--line);min-width:120px}
+  @media(max-width:620px){.phase-metric{text-align:left;border-left:0;padding-left:0;border-top:1px solid var(--line);padding-top:12px}}
+  .phase-metric .m{font-family:var(--display);font-size:28px;font-weight:600;color:var(--ink);line-height:1}
+  .phase-metric .ml{font-size:12px;color:var(--muted);margin-top:4px}
+
+  details.deep{border-top:1px solid var(--line)}
+  details.deep summary{
+    list-style:none;cursor:pointer;padding:14px 26px;font-size:13.5px;font-weight:600;color:var(--brand);
+    display:flex;align-items:center;gap:8px;user-select:none;
+  }
+  details.deep summary::-webkit-details-marker{display:none}
+  details.deep summary .chev{transition:.2s;font-size:11px}
+  details.deep[open] summary .chev{transform:rotate(90deg)}
+  details.deep summary:hover{background:var(--surface)}
+  .deep-content{padding:4px 26px 24px;font-size:15px;max-width:66ch}
+  .deep-content ul{margin:0 0 12px;padding-left:18px}
+  .deep-content li{margin-bottom:8px}
+
+  /* ---- lessons ---- */
+  .lessons{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:8px}
+  @media(max-width:760px){.lessons{grid-template-columns:1fr}}
+  .lesson{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+  .lesson h4{font-size:16px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+  .lesson p{font-size:14.5px;margin:0}
+  .lesson.win{border-top:3px solid var(--sust)}
+  .lesson.diff{border-top:3px solid var(--com)}
+  .pull{
+    grid-column:1/-1;background:var(--ink);color:#fff;border-radius:var(--radius);padding:28px 32px;
+    font-family:var(--display);font-size:clamp(19px,2.6vw,26px);line-height:1.3;font-weight:500;
+  }
+  .pull span{color:#7dd3fc}
+
+  /* ---- impact callout ---- */
+  .impact{margin-top:26px;background:linear-gradient(135deg,rgba(30,64,175,.06),rgba(8,145,178,.06));
+    border:1px solid var(--line);border-left:3px solid var(--brand-2);border-radius:14px;padding:22px 26px}
+  .impact-k{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--brand-2);margin-bottom:8px}
+  .impact p{margin:0;font-size:16px;color:var(--body);max-width:66ch}
+
+  /* overview/deep-dive behaviour */
+  body.mode-overview .overview-hidden{display:none}
+
+  .footer{padding:48px 0 64px;border-top:1px solid var(--line);color:var(--muted);font-size:13.5px}
+  .footer a{color:var(--brand)}
+  .src{font-size:12.5px;color:var(--muted);margin-top:10px}
+
+  .lightbox{
+    position:fixed;inset:0;z-index:100;background:rgba(12,14,26,.88);display:none;
+    align-items:center;justify-content:center;padding:32px;cursor:zoom-out;
+  }
+  .lightbox.open{display:flex}
+  .lightbox img{max-width:100%;max-height:100%;border-radius:10px;box-shadow:var(--shadow-lg)}
+</style>
+</head>
+<body class="mode-overview">
+
+<div class="topbar">
+  <div class="wrap">
+    <div class="brandmark">Rob Kerr <span>/</span> Case study</div>
+    <nav class="nav overview-hidden">
+      <a href="#context">Context</a>
+      <a href="#challenge">Challenge</a>
+      <a href="#bets">The bets</a>
+      <a href="#built">What I built</a>
+      <a href="#lessons">Lessons</a>
+    </nav>
+    <div class="toggle" style="margin-left:auto" role="tablist" aria-label="Reading depth">
+      <button id="btn-overview" class="active" onclick="setMode('overview')">Overview</button>
+      <button id="btn-deep" onclick="setMode('deep')">Deep dive</button>
+    </div>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow"><span class="dot"></span> Founder &amp; Indie Builder</span>
+    <h1>Building Google Analytics for physical space</h1>
+    <p class="hook">sense_ was an <b>internal venture inside a multi-award-winning London architecture practice</b>: a bet that the same firm which designed great spaces could build the technology to measure and optimise them. I joined as Product Director from inception, made the hardware bet, built a cross-functional team of fourteen, and reached a <b>£30m+ contract pipeline</b> with six blue-chip pilots and no dedicated sales function.</p>
+    <div class="meta">
+      <div>Role<span>Product Director</span></div>
+      <div>Period<span>2018 &ndash; 2021</span></div>
+      <div>Company<span>sense_ / spacelab_</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="stats">
+  <div class="wrap">
+    <div class="stat-grid">
+      <div class="stat"><div class="num">£30<span class="suffix">m+</span></div><div class="lbl">TCV pipeline by early 2020, built with no dedicated sales team</div></div>
+      <div class="stat"><div class="num">6</div><div class="lbl">blue-chip pilot customers — Warner Bros, Bauer Media, Romulus and others</div></div>
+      <div class="stat"><div class="num">100<span class="suffix">%</span></div><div class="lbl">design partner conversion rate: every pilot became an early customer</div></div>
+      <div class="stat"><div class="num">82<span class="suffix">%</span></div><div class="lbl">V1 occupancy accuracy — without capturing identifiable images</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SUMMARY -->
+<section id="summary" style="border-top:0">
+  <div class="wrap">
+    <div class="summary-card">
+      <div class="kicker">The short version</div>
+      <div class="prose">
+        <p>Commercial real estate is one of the world's largest asset classes, yet it has almost no performance data. At any given moment, over a third of a building's space sits empty. In central London, every 1,000 sq ft of leased space represents roughly <strong>£1m over a ten-year lease</strong>, a decision made almost entirely on intuition. The sensor technology available to address this was crude, expensive, or locked into proprietary systems that couldn't talk to each other.</p>
+        <p>spacelab_, a multi-award-winning London architecture studio, saw the gap and recruited me to fill it. We set out to build what you might call <strong>Google Analytics for physical space</strong>: a platform giving real estate owners the occupancy, energy, and environmental performance data their buildings had always lacked. The core challenge was a hardware bet no off-the-shelf sensor could meet at the accuracy and price point required, so we built one. By early 2020 we had <strong>six live pilots</strong> with blue-chip clients, a £30m+ TCV pipeline, and our V2 sensor shipping an embedded ML model.</p>
+        <p>Then COVID emptied every office overnight. The pivot was real, but so was the learning: sense_ was my first serious encounter with deployed machine learning, and it set the direction for everything I've built since.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTEXT -->
+<section id="context" class="overview-hidden">
+  <div class="wrap">
+    <div class="kicker">01 &middot; Context</div>
+    <h2>A trillion-pound asset class flying blind</h2>
+    <div class="prose">
+      <p>spacelab_ was seventeen years into delivering award-winning workplace projects for large corporates when the founders spotted a gap. Their clients had deep knowledge of how to <em>design</em> space, but almost none of how space was actually <em>used</em>. The occupancy data simply didn't exist.</p>
+      <p>The scale of the problem was striking. At any given time, over a third of a building's space sits empty. Buildings are responsible for nearly <strong>40% of annual global greenhouse gas emissions</strong>, and the majority of that waste flows from a basic information gap: no one knows where people are, so no one can regulate temperature, air quality, or lighting against real demand. In commercial real estate, the consequence was both financial and environmental. A 10,000 sq m London office might carry a £10m+ lease, renewed on the basis of gut feel and walk-throughs because no analytics existed to say how the building was actually performing.</p>
+      <p>The opportunity was to build the measurement layer that didn't exist. spacelab_'s seventeen years of client relationships, deep understanding of workplace design, and trusted position with property directors gave it a route into the market that a pure technology startup would have struggled to open. The question was whether a design firm could make a credible technology bet.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CHALLENGE -->
+<section id="challenge">
+  <div class="wrap">
+    <div class="kicker">02 &middot; The challenge</div>
+    <h2>Three problems, one product bet, and a hardware constraint no one had solved</h2>
+    <p class="lead">Three legitimate problem spaces competed for limited resource. Choosing the wrong one to anchor on meant building a product the market wouldn't pay for. Choosing the right one meant making a hardware bet we weren't sure we could win.</p>
+
+    <div style="margin:22px 0 0">
+      <div class="ps-tabs">
+        <button class="ps-tab active occ" onclick="psView('occ',this)">Space efficiency</button>
+        <button class="ps-tab com" onclick="psView('com',this)">Comfort &amp; building management</button>
+        <button class="ps-tab sust" onclick="psView('sust',this)">Sustainability</button>
+      </div>
+
+      <div class="ps-panel active" id="ps-occ">
+        <div class="ps-card">
+          <h4 style="color:var(--occ)">The opportunity</h4>
+          <p>Property directors could immediately quantify the cost of running a building at a third of capacity. In London, every 1,000 sq ft of underused space is roughly £1m wasted over a ten-year lease. The ROI story was quantifiable, immediate, and sat at CXO level, not just with facilities managers.</p>
+          <ul>
+            <li>Buyer is a property director or CXO, with authority to act</li>
+            <li>Existing sensor technology was genuinely inadequate (basic PIR motion sensors couldn't distinguish a person from a jacket on a chair)</li>
+            <li>No joined-up solution combining real-time occupancy, energy, and analytics existed</li>
+          </ul>
+        </div>
+        <div class="ps-card">
+          <h4 style="color:var(--occ)">The constraint</h4>
+          <p>Solving occupancy meant making a hardware bet. No off-the-shelf sensor would do it at the accuracy and price point required, and at a privacy-compliance standard suitable for the workplace. We would have to build one, an unfamiliar discipline for a team inside a design firm with no hardware background.</p>
+          <ul>
+            <li>Requires proprietary sensor development from scratch</li>
+            <li>Firmware complexity is a different track from platform development</li>
+            <li>Privacy compliance (no identifiable images in the workplace) constrains sensor choices</li>
+          </ul>
+        </div>
+        <div class="ps-verdict chosen">
+          <span class="v-ic">&#10003;</span>
+          <div><strong>This is where we anchored.</strong> The ROI case was the clearest of the three, the buyer had the most authority, and existing technology was most clearly inadequate. The hardware constraint was real but solvable. Every conversation with a property director confirmed the choice.</div>
+        </div>
+      </div>
+
+      <div class="ps-panel" id="ps-com">
+        <div class="ps-card">
+          <h4 style="color:var(--com)">The opportunity</h4>
+          <p>CO2 levels above 900ppm reduce concentration by up to 15%; above 1,400ppm the drop reaches 65%. Most facilities managers had no visibility of air quality in real time. Conference room availability, temperature management, and sensor-driven HVAC control were all unaddressed. The day-to-day friction was real.</p>
+          <ul>
+            <li>Facilities managers actively felt the problem daily</li>
+            <li>CO2 and temperature data was technically straightforward to collect</li>
+            <li>A growing regulatory agenda around healthy buildings</li>
+          </ul>
+        </div>
+        <div class="ps-card">
+          <h4 style="color:var(--com)">Why it wasn't the anchor</h4>
+          <p>The buyer for comfort management was a facilities manager, not a CXO. Budget authority was lower, and the ROI story was harder to quantify directly on a balance sheet. The problem was real, but it didn't justify the level of investment required to build from scratch when occupancy offered a clearer path to value capture.</p>
+          <ul>
+            <li>Buyer has less authority and smaller budget</li>
+            <li>More competition from point-solution vendors</li>
+            <li>Harder to quantify ROI against lease costs</li>
+          </ul>
+        </div>
+        <div class="ps-verdict not-chosen">
+          <span class="v-ic">&#8599;</span>
+          <div><strong>Adjacent layer, not the anchor.</strong> Comfort data (CO2, temperature) was surfaced in the platform once the core occupancy problem was solved. It extended the product's value without requiring a separate hardware bet. The buyer-user tension this created, CXO signs off, FM uses it daily, was one of the harder lessons.</div>
+        </div>
+      </div>
+
+      <div class="ps-panel" id="ps-sust">
+        <div class="ps-card">
+          <h4 style="color:var(--sust)">The opportunity</h4>
+          <p>Commercial buildings account for 10% of the UK's greenhouse gas emissions, and businesses were estimated to be missing a £1.6bn cost-saving opportunity through energy inefficiency. Carbon footprint was moving from optional reporting to a regulatory obligation, and no granular measurement layer existed at the building level.</p>
+          <ul>
+            <li>Growing regulatory and investor pressure on Scope 1 and 2 emissions</li>
+            <li>sense_'s occupancy data was a natural feed into energy optimisation</li>
+            <li>Aligns with spacelab_'s design-for-good identity</li>
+          </ul>
+        </div>
+        <div class="ps-card">
+          <h4 style="color:var(--sust)">Why it wasn't the anchor</h4>
+          <p>In 2018-2019, sustainability reporting was a growing agenda but not yet a financial forcing function for most property directors. The ROI case was real but longer-term and harder to tie to an immediate balance sheet decision. It was the right extension, not the right starting point.</p>
+          <ul>
+            <li>Regulatory urgency was 3-5 years away for most buyers</li>
+            <li>Harder to close a sale on future obligation than present inefficiency</li>
+            <li>Required building-level energy monitoring in addition to occupancy</li>
+          </ul>
+        </div>
+        <div class="ps-verdict not-chosen">
+          <span class="v-ic">&#8599;</span>
+          <div><strong>Partnered, not built.</strong> Carbon footprint calculation was delivered via a partner integration rather than built in-house, surfacing Scope 1 and 2 emissions data directly in the dashboard. This was the right call: extend the platform's sustainability story without diverting resource from the core occupancy bet.</div>
+        </div>
+      </div>
+    </div>
+
+    <details class="deep" style="margin-top:24px;border-radius:var(--radius);border:1px solid var(--line);">
+      <summary><span class="chev">&#9658;</span> The organisational challenge: building a tech product inside a design firm</summary>
+      <div class="deep-content">
+        <p>spacelab_'s identity was built on human expertise and judgment. The proposition that a sensor platform could tell a client what a talented design team had previously interpreted through site visits and workshops raised uncomfortable questions internally: was sense_ complementing the design practice or beginning to replace it?</p>
+        <p>Getting alignment required building a product vision that held both the design heritage and the technology ambition. The framing that worked was that sense_ surfaced the data; the design team turned it into insight and action. The sensor platform couldn't read a space. It could tell you how a space was being used. What to do about it still required expert judgment. This kept sense_ positioned as an enhancement to the practice, not a threat to it.</p>
+        <p>In retrospect, this framing was also commercially correct. The combination of real-time data and spacelab_'s seventeen years of workplace knowledge was the differentiator no pure sensor vendor could replicate.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- THE BETS -->
+<section id="bets">
+  <div class="wrap">
+    <div class="kicker">03 &middot; The bets</div>
+    <h2>Hardware first, mobile first</h2>
+    <p class="lead">Two bets defined the product: build a proprietary sensor rather than wait for off-the-shelf technology to catch up, and build the platform mobile-first for the buyers who would actually use it.</p>
+
+    <div style="margin-top:24px">
+      <div class="kicker" style="margin-bottom:16px">The hardware progression</div>
+      <div class="hw-rail" id="hwRail"></div>
+      <div class="hw-detail" id="hwDetail"></div>
+    </div>
+
+    <details class="deep" style="margin-top:24px;border-radius:var(--radius);border:1px solid var(--line);">
+      <summary><span class="chev">&#9658;</span> Why mobile-first was a deliberate bet, not a default</summary>
+      <div class="deep-content">
+        <p>The property director buyer had fifteen minutes, not fifteen hours. Building for a dashboard they'd sit in front of at a workstation was building for the wrong context. The person with authority to act on the data was often on-site, walking a building, or reviewing portfolio performance between meetings. Mobile-first was a bet on where the buyer's attention actually was, not where a typical B2B SaaS product would have assumed it to be.</p>
+        <p>The platform surfaced real-time and historical occupancy data, CO2 levels, energy consumption, and carbon footprint. Alongside it sat the UPV (Unutilised Potential Value) space modelling tool, which calculated the monetary cost of unused workspace in terms the CFO would recognise: this floor is running at 40% occupancy, and the lease cost of the unused space is £X over the remaining term. Making the insight legible to a property director in a fifteen-minute walkthrough was the design brief.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- WHAT I BUILT -->
+<section id="built">
+  <div class="wrap">
+    <div class="kicker">04 &middot; What I built</div>
+    <h2>The platform, the pilot process, and the clients it won</h2>
+
+    <div style="margin-top:8px">
+      <div class="kicker" style="margin-bottom:12px;margin-top:0">The platform: four sections</div>
+      <div class="app-grid">
+        <div class="app-tile">
+          <div class="at-no">See more</div>
+          <h4>Real-time occupancy intelligence</h4>
+          <p>Peak and average occupancy across all floors and space types. CO2 levels measured continuously. Carbon footprint surfaced. Heatmaps showing how the space is actually used, updated in real time.</p>
+        </div>
+        <div class="app-tile">
+          <div class="at-no">Do more</div>
+          <h4>Space efficiency &amp; the UPV tool</h4>
+          <p>Utilisation data showing which spaces are under and over capacity. The Unutilised Potential Value (UPV) tool translates occupancy data into financial terms: the monetary cost of unused workspace over the remaining lease term.</p>
+        </div>
+        <div class="app-tile">
+          <div class="at-no">Learn more</div>
+          <h4>Benchmarking resource</h4>
+          <p>A knowledge layer drawing on spacelab_'s seventeen years of workplace evidence. Surfaced key facts, trends, and findings from across the client base to give each customer context for their own data.</p>
+        </div>
+        <div class="app-tile">
+          <div class="at-no">Profile</div>
+          <h4>Customer data &amp; configuration</h4>
+          <p>Profile data store letting customers update their space configuration to keep occupancy benchmarks accurate. Foundation for the personalised insights the platform delivered at scale.</p>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:36px">
+      <div class="kicker" style="margin-bottom:12px">The pilot process</div>
+      <div class="prose">
+        <p style="font-size:16.5px">Design partners were recruited before a single pilot ran at scale. Every organisation willing to deploy the technology in exchange for early access and a seat at the product development table became a named reference. The process was structured: a visioning session to establish business requirements, a 3D scan to map the space, a six-week live deployment with bi-weekly client workshops, and a structured insight report designed to make the case for full deployment. Every design partner converted to an early customer.</p>
+      </div>
+    </div>
+
+    <div style="margin-top:24px">
+      <div class="kicker" style="margin-bottom:12px">Pilot customers: 2,800 sq m under active monitoring across 7 locations</div>
+      <div class="pilot-grid">
+        <div class="pilot-card">
+          <div class="pc-name">Warner Bros.</div>
+          <div class="pc-tag">Entertainment · London</div>
+          <div class="pilot-badge">Customer</div>
+        </div>
+        <div class="pilot-card">
+          <div class="pc-name">Bauer Media</div>
+          <div class="pc-tag">Media · London</div>
+          <div class="pilot-badge">Customer</div>
+        </div>
+        <div class="pilot-card">
+          <div class="pc-name">Romulus</div>
+          <div class="pc-tag">Property · London</div>
+          <div class="pilot-badge">Customer</div>
+        </div>
+        <div class="pilot-card">
+          <div class="pc-name">Waltham Forest Council</div>
+          <div class="pc-tag">Public sector · London</div>
+          <div class="pilot-badge">Customer</div>
+        </div>
+        <div class="pilot-card">
+          <div class="pc-name">Huddle</div>
+          <div class="pc-tag">Technology · London</div>
+          <div class="pilot-badge">Customer</div>
+        </div>
+        <div class="pilot-card">
+          <div class="pc-name">Rider Levett Bucknall</div>
+          <div class="pc-tag">Construction consultancy · London</div>
+          <div class="pilot-badge">Customer</div>
+        </div>
+      </div>
+      <div class="pilot-total">
+        <strong>Six pilots, zero losses.</strong> Every design partner that went through the pilot process became an early customer. By early 2020, the pipeline had reached <strong>£30m+ TCV</strong> with no dedicated sales function, built entirely through pilot conversion and referral.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COVID INFLECTION -->
+<section id="covid">
+  <div class="wrap">
+    <div class="kicker">05 &middot; The inflection</div>
+    <h2>March 2020: every office empties overnight</h2>
+    <div class="prose" style="margin-bottom:24px">
+      <p style="font-size:16.5px">In March 2020, the core use case, optimising how space is used by the people in it, became temporarily redundant. The pipeline that had taken eighteen months to build went quiet. The question was whether the underlying product had a different job to do.</p>
+    </div>
+    <div class="covid">
+      <div class="covid-head">
+        <div class="covid-ic">&#8635;</div>
+        <div>
+          <h3>The COVID pivot</h3>
+          <div class="ch-date">March 2020</div>
+        </div>
+      </div>
+      <div class="covid-body">
+        <div class="covid-col">
+          <h4>What changed</h4>
+          <ul>
+            <li>Offices emptied almost overnight; optimising occupied space became irrelevant</li>
+            <li>Pipeline of £30m+ went quiet as clients paused all non-essential decisions</li>
+            <li>The original use case, space efficiency and lease optimisation, couldn't be the immediate pitch</li>
+          </ul>
+        </div>
+        <div class="covid-col">
+          <h4>What the product already had</h4>
+          <ul>
+            <li>Real-time headcount against any threshold (immediately reframeable as capacity compliance)</li>
+            <li>CO2 monitoring for ventilation quality (suddenly a health and safety concern, not a productivity note)</li>
+            <li>Flow rate data showing how people moved through a space</li>
+            <li>Alerts directing people to underutilised areas to manage safe density</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="prose" style="margin-top:20px">
+      <p style="font-size:16.5px">The pivot wasn't purely defensive. The pandemic made building health acutely visible, and sense_ already had the sensors. We moved quickly to build features around COVID-safe capacity management: real-time headcount against compliant limits, flow rate monitoring, and alerts directing people to underutilised spaces as buildings began reopening. It was a genuine product response, not just a messaging shift. But it was adaptation under pressure rather than the natural extension we'd planned.</p>
+    </div>
+  </div>
+</section>
+
+<!-- LESSONS -->
+<section id="lessons">
+  <div class="wrap">
+    <div class="kicker">06 &middot; What worked, what didn't</div>
+    <h2>The occupancy bet was right. The buyer-user tension was real.</h2>
+    <p class="lead">The core strategic decisions paid off: the hardware bet, the design partner approach, and the mobile-first platform all worked. The harder lessons were about who the product was actually for once it was in the field.</p>
+
+    <div class="lessons">
+      <div class="lesson win">
+        <h4>&#10003; The occupancy anchor</h4>
+        <p>Choosing space efficiency over comfort or sustainability as the primary problem was validated quickly. Every conversation with a property director lit up around the cost and utilisation story in a way that comfort management never quite did. We didn't lose a single design partner through the pilot process.</p>
+      </div>
+      <div class="lesson win">
+        <h4>&#10003; The design partner model</h4>
+        <p>Recruiting design partners before building at scale was the right call. Real environments, real feedback, real names to reference with subsequent prospects. The 100% conversion rate was the signal: if the product is right, the pilot sells itself. If it isn't, you find out before you've scaled anything.</p>
+      </div>
+      <div class="pull">The hardware bet was expensive. <span>But the alternative was a sensor that wouldn't do the job.</span></div>
+      <div class="lesson diff">
+        <h4>&#8635; The buyer-user tension</h4>
+        <p>Platform usage data surfaced something we hadn't fully anticipated: the most engaged daily users were facilities managers, not the property directors who signed off the subscription. The ROI story that justified the spend lived at CXO level; the day-to-day value was operational and granular. We tried to serve both without fully committing to either.</p>
+      </div>
+      <div class="lesson diff">
+        <h4>&#8635; Hardware roadmap buffer</h4>
+        <p>The iteration from breadboard thermopile prototype to embedded ML camera took longer and consumed more resource than planned. Firmware complexity is a different discipline from platform development, and managing both tracks simultaneously with largely separate contracted teams created coordination overhead we hadn't fully priced in.</p>
+      </div>
+      <div class="lesson diff" style="grid-column:1/-1">
+        <h4>&#8635; What I'd have done differently</h4>
+        <p>I'd have moved faster to surface the buyer-user tension and built more explicit product separation between the CXO value layer and the FM operational layer, possibly as distinct tiers rather than a single dashboard attempting to serve both. And I'd have built more buffer into the hardware roadmap for firmware complexity, which consistently surprised us despite being predictable in retrospect.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONCLUSION -->
+<section id="conclusion">
+  <div class="wrap">
+    <div class="kicker">07 &middot; In short</div>
+    <h2>A technology bet inside an organisation not built for one.</h2>
+    <div class="prose">
+      <p>sense_ is the case study I return to most often when thinking about what product leadership actually means in an organisation making its first technology bet. The conditions were genuinely difficult: a professional services firm whose identity was built on human expertise, a product requiring proprietary hardware we had to invent, three legitimate problem spaces competing for limited resource, and a market that was upended at the moment of maximum momentum.</p>
+      <p>The fact that we reached blue-chip pilots, a £30m+ contract pipeline, and a working embedded ML sensor with no dedicated sales team reflects what's possible when the technical and commercial case is made carefully and the right design partners are recruited early. The harder lesson is about what product leadership looks like when the organisation isn't built for technology: the job is as much about building confidence as building the product.</p>
+    </div>
+    <div class="impact">
+      <div class="impact-k">The thread that runs forward</div>
+      <p>sense_ was my first real encounter with machine learning in a deployed, physical context: not a dataset or a proof of concept, but an embedded model making inferences in real buildings with real consequences for accuracy. Working at that intersection of hardware and intelligence sparked a fascination with what machine learning could do and where it might go. That curiosity carried forward from the thermopile sensor on a ceiling in Waltham Forest through to the data services and ML work at Utility Warehouse, and eventually into the agentic systems and LLM work I do today. The thread runs directly, even if the medium changed completely.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="wrap">
+    <p style="margin:0"><strong style="color:var(--ink)">Rob Kerr</strong> &middot; Product Director, sense_</p>
+    <p class="src">Capability theme: Founder &amp; Indie Builder &middot; Sources: making sense_ (converge.io case study deck), sense_ Investment Opportunity deck (February 2020). Pipeline figure directional; client names drawn from investor deck pilot customer list.</p>
+  </div>
+</footer>
+
+<div class="lightbox" id="lightbox" onclick="closeLightbox()"><img id="lightbox-img" alt=""></div>
+
+<script>
+  function setMode(mode){
+    document.body.classList.toggle('mode-overview', mode==='overview');
+    document.body.classList.toggle('mode-deep', mode==='deep');
+    document.getElementById('btn-overview').classList.toggle('active', mode==='overview');
+    document.getElementById('btn-deep').classList.toggle('active', mode==='deep');
+    document.querySelectorAll('details.deep').forEach(function(d){
+      d.open = mode === 'deep';
+    });
+    if(mode==='overview'){ window.scrollTo({top:0,behavior:'smooth'}); }
+  }
+
+  // ---- problem space tabs ----
+  function psView(id, btn){
+    document.querySelectorAll('.ps-panel').forEach(function(p){ p.classList.remove('active'); });
+    document.querySelectorAll('.ps-tab').forEach(function(b){ b.classList.remove('active','occ','com','sust'); });
+    document.getElementById('ps-'+id).classList.add('active');
+    btn.classList.add('active', id);
+  }
+
+  // ---- hardware evolution rail ----
+  var hw=[
+    {
+      v:'Breadboard prototype',d:'Early 2019',l:'Proof of concept',
+      desc:'A low-cost thermal sensor array wired to a development board, used to prove that a thermopile could distinguish body heat in an office environment without capturing identifiable images. Rough, but enough to confirm the physics worked.',
+      feats:['Thermopile array on breadboard','Body-heat detection proof of concept','Privacy-compliant: no image capture','Sufficient to validate the occupancy sensing approach']
+    },
+    {
+      v:'V1 sense_ sensor',d:'Mid 2019',l:'Purpose-built thermopile',
+      desc:'The first production-intent sensor. Purpose-built thermopile hardware designed for non-intrusive installation, suitable for workplace deployment under GDPR without capturing identifiable images. Delivered 82% occupancy accuracy in live pilots.',
+      feats:['Purpose-built thermopile hardware','82% occupancy accuracy in live pilots','Non-intrusive ceiling-mount install','GDPR-compliant: no identifiable image capture','Firmware & provisioning working (confirmed Jan-Dec 2019)','Deployed at Waltham Forest, Warner Bros, and Lab pilots']
+    },
+    {
+      v:'V2 sense_ sensor',d:'2020',l:'Camera + embedded ML model',
+      desc:'The second-generation sensor moved from thermopile to a camera with an embedded ML model, significantly improving accuracy and enabling richer occupancy intelligence. The ML model ran on-device, maintaining privacy compliance while unlocking desk-level granularity and flow-rate monitoring.',
+      feats:['Camera sensor with on-device ML inference','Significantly higher accuracy than V1','Desk-level occupancy granularity','Flow-rate monitoring (persons per minute through zones)','Privacy maintained: ML runs on-device, no raw image transmitted','Foundation for COVID capacity compliance features (2020)'],
+      hl:'Camera + embedded ML model'
+    }
+  ];
+
+  (function(){
+    var rail=document.getElementById('hwRail'), detail=document.getElementById('hwDetail');
+    if(!rail||!detail) return;
+    hw.forEach(function(h,i){
+      var b=document.createElement('button');
+      b.className='hw-chip';
+      b.innerHTML='<div class="hv">'+h.v+'</div><div class="hd">'+h.l+'</div>';
+      b.onclick=function(){ show(i); };
+      rail.appendChild(b);
+    });
+    function show(i){
+      var h=hw[i];
+      Array.prototype.forEach.call(rail.children,function(c,j){ c.classList.toggle('active',j===i); });
+      var feats=h.feats.map(function(x){
+        return '<li'+(h.hl&&x.indexOf(h.hl)>-1?' class="hl"':'')+'>'+x+'</li>';
+      }).join('');
+      detail.innerHTML=
+        '<div class="hw-badge">'+
+          '<div class="hbv">'+h.v+'</div>'+
+          '<div class="hbd">'+h.d+'</div>'+
+          '<div class="hbl">'+h.l+'</div>'+
+        '</div>'+
+        '<div class="hw-feats">'+
+          '<h4>'+h.desc+'</h4>'+
+          '<ul>'+feats+'</ul>'+
+        '</div>';
+    }
+    show(1);
+  })();
+
+  // ---- lightbox ----
+  function openLightbox(src){
+    var lb=document.getElementById('lightbox'), im=document.getElementById('lightbox-img');
+    im.src=src; lb.classList.add('open');
+  }
+  function closeLightbox(){ document.getElementById('lightbox').classList.remove('open'); }
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeLightbox(); });
+</script>
+</body>
+</html>
