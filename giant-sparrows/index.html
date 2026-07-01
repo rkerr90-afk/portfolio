@@ -42,6 +42,8 @@
   .topbar .wrap{display:flex;align-items:center;gap:16px;height:60px}
   .brandmark{font-family:var(--display);font-weight:600;color:var(--ink);font-size:16px;letter-spacing:-.01em}
   .brandmark span{color:var(--brand-2)}
+  .brandmark-home{color:var(--ink);text-decoration:none}
+  .brandmark-home:hover{text-decoration:underline;text-underline-offset:3px}
   .nav{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
   .nav a{font-size:13px;color:var(--muted);padding:6px 10px;border-radius:8px;font-weight:500;}
   .nav a:hover{color:var(--ink);background:var(--surface-2);text-decoration:none}
@@ -152,7 +154,7 @@
 
 <div class="topbar">
   <div class="wrap">
-    <div class="brandmark">Rob Kerr <span>/</span> Case study</div>
+    <div class="brandmark"><a href="/" class="brandmark-home">Rob Kerr</a> <span>/</span> Case study</div>
     <nav class="nav overview-hidden">
       <a href="#context">Context</a>
       <a href="#built">What we built</a>
