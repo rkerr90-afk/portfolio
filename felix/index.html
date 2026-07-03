@@ -271,10 +271,10 @@
     <span class="eyebrow"><span class="dot"></span> AI Automation &amp; Agentic Systems</span>
     <h1>Felix</h1>
     <div class="subtitle">An agent for event organisers</div>
-    <p class="hook">Felix runs a small events business in London, ten to twelve nights a month, on his own. I built him an agent to wire his promotions together and tell him where his ticket sales actually came from. This is the story of what building it taught me: how the architecture forced me into <b>evals</b>, and how a stronger model, acting as judge, caught my agent having a panic attack on a friend's behalf.</p>
+    <p class="hook">Felix runs the Temenos Dance Collective, a small events business in London. I built him an agent to wire his promotions together and tell him where his ticket sales actually came from. This is the story of what building it taught me: how the agent architecture forced me into <b>evals</b>, and how radically different it is to build in a probabilistic paradigm.</p>
     <div class="meta">
       <div>Context<span>Independent practice</span></div>
-      <div>Client<span>A friend's events business, London</span></div>
+      <div>Client<span>Temenos Dance Collective, London</span></div>
       <div>Build<span>Telegram agent + tooling, solo</span></div>
     </div>
   </div>
@@ -295,11 +295,11 @@
 <section id="summary" style="border-top:0">
   <div class="wrap">
     <div class="summary-card">
-      <div class="kicker">The short version</div>
+      <div class="kicker">In a nutshell</div>
       <div class="prose">
-        <p>Felix is a close friend who runs a small events business in London, ten to twelve nights a month, on his own. He promotes every one of them across email, WhatsApp, Instagram and his website, with no real idea which channel sells a single ticket. I set out to build him an agent that wired everything together, ran his promotions, and learned where his sales actually came from.</p>
-        <p>I built it twice. The first version was a conventional state machine with the language model bolted on as a garnish. It was brittle. The second was an agent, with the model doing the reasoning and tools doing the fetching. That was the better system, but it moved the hard part somewhere I hadn't expected, and then somewhere I couldn't see at all.</p>
-        <p>Testing that invisible layer is where I taught myself evals. I'd been running questions past the bot and eyeballing the answers without knowing the practice had a name. The eval caught something I never thought to look for: under partial data, the agent stopped sounding like a chief of staff and started sounding like a panic attack. Fixing that, in the prompt and in the model routing, is the real subject here. It's also the discipline I now use in professional work.</p>
+        <p>Felix is a close friend who runs ten to twelve conscious dance events a month, on his own. He promotes every one of them across email, WhatsApp, Instagram and his website, with no real idea which channel sells a single ticket. I set out to build him an agent that wired everything together, ran his promotions, and learned where his sales actually came from.</p>
+        <p>I built it twice. The first version was a conventional state machine with the language model bolted on as a garnish. It was brittle. The second was an agent, with the model doing the reasoning and tools doing the fetching. That was the better system, but it moved the "brittleness" somewhere I hadn't expected, and then somewhere I couldn't see at all.</p>
+        <p>Testing that invisible layer is where I taught myself evals. I'd been running questions past the bot and eyeballing the answers without knowing the practice had a name. The eval caught something I never thought to look for: under partial data or a broken API, Felix's agent didn't throw an error, it developed an attitude. LLMs are trained on the substrate of humanity and they can respond in a very human manner. Learning how to test and calibrate an agent, from tool calling through to tone and completeness, was the learning here and has proven very useful in subsequent professional work.</p>
       </div>
     </div>
   </div>
@@ -309,10 +309,10 @@
 <section id="context">
   <div class="wrap">
     <div class="kicker">01 &middot; Context</div>
-    <h2>A one-man band, flying blind on attribution</h2>
+    <h2>Flying blind on attribution</h2>
     <p class="lead">Felix's problem was never effort. It was visibility. When a night sold well he couldn't tell you why, and when it sold slowly he couldn't tell you where to push.</p>
     <div class="prose">
-      <p>He runs ecstatic dance and movement nights with a real community around them, promoted across five WhatsApp groups, a thousand-odd person mailing list, Instagram, and his own site. Ticketing sits on one platform, email on another, the links scattered across channels that report nothing back. So every cycle he was promoting hard and guessing, with no thread connecting a WhatsApp share to a ticket sold.</p>
+      <p>He runs conscious dance and movement nights with a real community around them, promoted across five WhatsApp groups, a thousand-odd person mailing list, Instagram, and his own site. Ticketing sits on one platform, email on another, the links scattered across channels that report nothing back. So every cycle he was promoting hard and guessing, with no thread connecting a WhatsApp share to a ticket sold.</p>
       <p>The idea was a mobile-first agent, living in Telegram where Felix already was, that connected his ticketing, his email, the WhatsApp links and the site into one loop. It would run his promotions, track every link, and feed the attribution back to him, so each cycle taught the next: see what worked, lean into it, learn, lean in again. And because Felix wanted a colleague rather than a lecture, the agent had to advise like someone who actually knew event marketing. So part of the build was research, a real read of email and WhatsApp promotion best practice, baked into the agent's context so its advice came from current practice rather than vibes.</p>
     </div>
     <details class="deep">
@@ -332,14 +332,14 @@
     <h2>I built it as a state machine. It was brittle.</h2>
     <p class="lead">The obvious way to make a bot reliable is to make it deterministic. So the first version was a workflow engine, and the model only smoothed the wording.</p>
     <div class="prose">
-      <p>It had a scripted onboarding, a scenario engine with a state for every situation Felix might be in, and a content pipeline that scored and generated copy. The language model sat on top as a garnish. Every situation Felix could land in was a branch I had to anticipate and write by hand. Miss one and the bot fell over or said something wooden.</p>
-      <p>The trouble with that shape is that the world has more situations than you can enumerate. The failure lived in my branching logic, and there was always another edge case waiting. I was spending most of my time covering cases rather than making the thing genuinely useful, and the model, the most capable part of the whole system, was reduced to tidying sentences.</p>
+      <p>It had a scripted onboarding, a scenario engine with a state for every situation Felix might be in, and a content pipeline that scored and generated copy. The language model sat on top as a garnish (in retrospect). Every situation Felix could land in was a branch I had to anticipate and write by hand. Miss one and the bot fell over or said something wooden.</p>
+      <p>The trouble with that shape is that the world has more situations than you can enumerate. The failure lived in my branching logic, and there was always another edge case waiting. I was spending most of my time covering cases rather than making the thing genuinely useful, and the model, the most capable part of the whole system, was being underused.</p>
     </div>
     <details class="deep">
       <summary><span class="chev">&#9654;</span> What the deterministic version actually contained</summary>
       <div class="deep-content">
         <p>The first architecture carried a five-day scripted onboarding flow, a seventeen-state scenario engine that tried to classify which situation a client was in, and a content engine with a scoring model, seven copy angles and a multi-layer prompt. Roughly fifty Python files and somewhere near nineteen thousand lines, most of it written to anticipate situations rather than reason about them.</p>
-        <p>It worked, in the narrow sense that the happy paths ran. But it was expensive to extend, fragile at the edges, and the effort of maintaining the branches scaled with Felix's unpredictability, which is to say without limit.</p>
+        <p>It worked, in the narrow sense that the happy paths ran. But it was expensive to extend, fragile at the edges, and the effort of maintaining the branches scaled with Felix's unpredictability.</p>
       </div>
     </details>
   </div>
@@ -349,8 +349,8 @@
 <section id="shift">
   <div class="wrap">
     <div class="kicker">03 &middot; The shift</div>
-    <h2>The fix moved the problem. Twice.</h2>
-    <p class="lead">So I turned it inside out. Instead of code that decided what to do with the model smoothing the edges, I made the model the thing that reasons, and gave it tools to fetch data and take actions.</p>
+    <h2>The fix moved the problem.</h2>
+    <p class="lead">So I regrouped. Instead of code that decided what to do with the model smoothing the edges, I made Felix a proper agent with the model at the centre, and gave it tools to fetch data and take actions.</p>
     <div class="prose">
       <p>The agent was better straight away: more capable, more natural to talk to, and a far smaller codebase. But brittleness turned out to be conserved. It didn't disappear when I changed architecture. It relocated.</p>
       <p>With the reasoning now in the model, the failures moved to the tools. The agent was only ever as good as the data its tools handed it, and messy or partial tool output was where things broke. So I spent the next stretch making the tools solid, returning clean, well-shaped, trustworthy data. And when I'd done that, the brittleness moved one last time, to the model's own reasoning: how it behaved when data was missing, whether it actually followed the instructions in the prompt. That layer is invisible. You can't read it off the code, and you can't read it off the tool outputs. The only way to see it is to test it.</p>
@@ -384,11 +384,11 @@
 <section id="evals">
   <div class="wrap">
     <div class="kicker">04 &middot; Discovering evals</div>
-    <h2>To see the invisible layer, I had to test it. That's how I found evals.</h2>
+    <h2>To see the invisible layer, I had to test the output.</h2>
     <p class="lead">Once the tools were solid and the agent was working, the only way to know if it was any good was to ask it things and look hard at what came back.</p>
     <div class="prose">
       <p>I sat down with Felix and we went through the questions he'd actually ask: how's this night selling, who should I email, what should I post. I wrote them down. That list was a golden set, though I didn't know the term yet. As I ran the questions past Claude, I asked whether there was a formal way to test an agent. That's where evals surfaced. I read into it properly, wrote up a methodology for the project, and did it for real: a golden set per data source, run through the bot, scored pass, partial or fail, with a stronger model acting as the judge.</p>
-      <p>The thing that struck me later is that the golden set was user discovery wearing different clothes. The most ordinary product habit I have, sitting with a user and learning what they'll ask, turned out to be the same muscle the eval needed. I'd built the test before I had the word for it. That's the part worth sitting with: I didn't adopt evals as a framework. I backed into them because the architecture left me no other way to know if the thing worked.</p>
+      <p>The thing that struck me later is that the golden set was user discovery wearing different clothes. The most ordinary product habit I have, sitting with a user and learning what they'll ask, turned out to be the same muscle the eval needed. That was the key learning for me, we don't know what happens inside an LLM, the only way to see if your product is doing what you want it to do is to continually test the outputs. It's uniquely suited to the product skillset.</p>
     </div>
     <details class="deep">
       <summary><span class="chev">&#9654;</span> The method, and the number I'd rather not show you</summary>
@@ -412,7 +412,7 @@
 <section id="catch">
   <div class="wrap">
     <div class="kicker">05 &middot; The catch</div>
-    <h2>I asked the eval to grade accuracy. It caught a panic attack.</h2>
+    <h2>When my agent caught a panic attack.</h2>
     <p class="lead">When the data came back clean, the agent was calm and useful. When it came back partial, ticket counts but no prices, this week's orders but no baseline, it catastrophised.</p>
 
     <div class="cp">
@@ -449,14 +449,14 @@
     <div class="rule-detail" id="ruleDetail"></div>
 
     <div class="prose" style="margin-top:28px">
-      <p>By the end, the system prompt had quietly become the specification, and the eval is what wrote it. None of those rules existed in advance. Each one is the scar of a specific failure the test surfaced.</p>
-      <p>But some failures aren't promptable. The cheap default model is reliably weak at date arithmetic and multi-step planning, and no amount of rewording fixes that. So the deeper fix is architectural: route by intent. The agent runs on the cheap model by default, and when it detects campaign planning, the workflow that leans hardest on reasoning, it upgrades to a stronger model for the rest of that conversation and gives it more room to work. Cheap when it can be, capable when it has to be. You can usually tell which workflow needs which by the tools the agent is reaching for.</p>
+      <p>By the end, the system prompt had quietly become the specification, and the eval is what wrote it. None of those rules existed in advance. Each one is the response to a specific failure the test surfaced.</p>
+      <p>But some failures aren't promptable. Haiku was reliably weak at date arithmetic and multi-step planning, and no amount of rewording fixes that. So the deeper fix is architectural: route by intent. The agent runs on the cheap model by default, and when it detects campaign planning, the workflow that leans hardest on reasoning, it upgrades to a stronger model for the rest of that conversation and gives it more room to work. Cheap when it can be, capable when it has to be. You can usually tell which workflow needs which by the tools the agent is reaching for.</p>
     </div>
 
     <details class="deep">
       <summary><span class="chev">&#9654;</span> How the routing actually works</summary>
       <div class="deep-content">
-        <p>The default is the cheap model. The upgrade triggers on intent expressed through tool use: when the agent calls the campaign-planning tools, it switches to the stronger model for the remainder of that conversation, lifts the tool-call budget from three to six, and widens the short-term memory from six turns to fourteen so a multi-step planning session doesn't lose its thread. The conversation stays upgraded until it goes quiet, then later sessions drop back to cheap.</p>
+        <p>The default is the cheaper model. The upgrade triggers on intent expressed through tool use: when the agent calls the campaign-planning tools, it switches to the stronger model for the remainder of that conversation, lifts the tool-call budget from three to six, and widens the short-term memory from six turns to fourteen so a multi-step planning session doesn't lose its thread. The conversation stays upgraded until it goes quiet, then later sessions drop back to cheap.</p>
         <p>The trigger earned its place. In one exchange Felix said "Thursday the 16th"; the cheap model confidently called that "after the event", then offered "the Thursday before" as the 9th, which is a Wednesday. The stronger model handles that reliably. Rather than pay for it on every message, you pay for it only on the workflow that needs it, and you detect that workflow by the tools in play, not by trying to classify the user's sentence.</p>
       </div>
     </details>
@@ -467,7 +467,7 @@
 <section id="lessons">
   <div class="wrap">
     <div class="kicker">07 &middot; What it taught me</div>
-    <h2>The agent was the deliverable. The discipline was the point.</h2>
+    <h2>Inadvertently discovering evals</h2>
     <p class="lead">No growth chart came out of this. What came out was a way of working that I didn't have before, learned on a friend's business with nothing riding on it but his 7am peace of mind.</p>
 
     <div class="lessons">
@@ -503,7 +503,7 @@
     <h2>The spec was something I discovered, not something I wrote</h2>
     <div class="prose">
       <p>I went in to build Felix a tool. I came out with a way of working. With deterministic software you can write the spec up front, because you can read the behaviour off the code. With an agent you can't, so you find the spec by testing: you watch what the thing does, you catch what it gets wrong, and you encode the correction. The golden set, the judge, the named rules, the model routing, all of it is one loop for arriving at a specification I couldn't have written in advance.</p>
-      <p>That's the part I keep. Not the agent itself, useful as it is to Felix, but the loop. The same discipline now travels into professional work, where the stakes are higher and the principle is identical. The architecture forced the question, the evals answered it, and the answer was never going to come from a document written before the system existed.</p>
+      <p>That's the part I keep. Not the agent itself, but the loop. The same discipline now informs my professional work. The architecture forced the question, the evals answered it.</p>
     </div>
     <div class="impact">
       <div class="impact-k">What I actually took away</div>

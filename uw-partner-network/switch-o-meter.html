@@ -202,11 +202,11 @@
 <section id="summary" style="border-top:0">
   <div class="wrap">
     <div class="summary-card">
-      <div class="kicker">The short version</div>
+      <div class="kicker">In a nutshell</div>
       <div class="prose">
         <p>UW partners ran a relationship-driven, largely intuitive sale. The activation problem was that even motivated partners struggled to know where to spend their time. Switch-o-meter was the answer: a machine-learning model that scored each prospect on how likely they were to become a UW customer, surfaced inside the partner app alongside the insights behind the score.</p>
         <p>We built it in three phases. A <strong>proof of concept</strong> tested four consumer-data providers and built a repeatable enrichment pipeline. A <strong>prototype</strong> trained the first model on roughly 21,000 prospects (around 78% accuracy) and demoed it live on real prospects, with clear separation between the likely and the unlikely. A <strong>production</strong> design wired enrichment and scoring straight into the partner app.</p>
-        <p>The headline: for the first time at UW, an ML model went into a live, partner-facing product. The harder-won lesson: data quality, not data volume, was the real lever, and ML needs more patience than a results-hungry organisation expects.</p>
+        <p>For the first time at UW, an ML model went into a live, partner-facing product. Data quality, not data volume, was the real lever, and ML needs more patience than a results-hungry organisation expects.</p>
       </div>
     </div>
   </div>
@@ -217,7 +217,7 @@
   <div class="wrap">
     <div class="kicker">01 · The bet</div>
     <h2>Give an intuitive sale a data layer</h2>
-    <p class="lead">Data enrichment means supplementing what you already know about a prospect with external data, so teams and partners can make smarter decisions. The product bet was that richer, better-timed insight would move the numbers that mattered at the activation stage. These were the targets we set against the wider business goal.</p>
+    <p class="lead">Data enrichment means supplementing what you already know about a prospect with external data, so teams and partners can make smarter decisions. The product bet was that richer, better timed insight would move the numbers that mattered at the activation stage.</p>
     <div class="targets">
       <div class="target">
         <div class="tn">~20<span class="suffix">%</span></div>
@@ -254,7 +254,7 @@
   <div class="wrap">
     <div class="kicker">03 · Inside the model</div>
     <h2>What actually predicted a switch</h2>
-    <p class="lead">Trained on roughly 21,000 prospects, the model reached around 78% accuracy at telling likely converters from unlikely ones. More interesting than the score was the why: a handful of attribute categories did most of the work, each with a human-readable story behind it.</p>
+    <p class="lead">Trained on roughly 21,000 prospects, the model reached around 78% accuracy at telling likely converters from unlikely ones. More interesting than the score was the why: a handful of attribute categories did most of the prediction.</p>
 
     <div class="attrs" id="attrs"></div>
 
@@ -289,7 +289,7 @@
   <div class="wrap">
     <div class="kicker">05 · Adapting</div>
     <h2>When the market broke the model</h2>
-    <p class="lead">We built and refined Switch-o-meter in a stable energy market. Then the market stopped being stable, and the model met the one thing every production system fears: a world that no longer looked like its training data.</p>
+    <p class="lead">We built and refined Switch-o-meter in a stable energy market. Then the market stopped being stable.</p>
     <div class="chart-card">
       <svg viewBox="0 0 700 280" role="img" aria-label="Model accuracy over time: stable, then drops at the energy market shock, then recovers after retraining">
         <line x1="50" y1="220" x2="670" y2="220" stroke="#e7e4ef" stroke-width="1"/>
@@ -310,8 +310,8 @@
       </svg>
     </div>
     <div class="prose" style="margin-top:20px">
-      <p>As wholesale energy prices spiked, a wave of UK suppliers that had not hedged their exposure collapsed, and their customers had to go somewhere. A large influx arrived from failed providers such as Bulb, and they looked nothing like UW's typical customer. The model had learned one kind of customer and was suddenly scoring another, so its accuracy slipped. Not because the model was wrong, but because the ground had moved under it.</p>
-      <p>We adapted quickly, retraining on the new reality until prediction was back to the level partners needed. The harder part was not the retraining, it was the conversation. An exec team new to machine learning saw a model that had been working start to wobble, and a retraining cycle that took time. That gap between "it broke" and "it's fixed" created real pressure, and clearer expectation-setting about how models behave when the world moves would have absorbed much of it.</p>
+      <p>As wholesale energy prices spiked, a wave of UK suppliers that had not hedged their exposure collapsed, and their customers had to go somewhere. A large influx arrived from failed providers such as Bulb, and they looked nothing like UW's typical customer. The model had learned one kind of customer and was suddenly scoring another, so its accuracy slipped.</p>
+      <p>We adapted quickly, retraining on the new reality until prediction was back to the level partners needed. The harder part was not the retraining, it was the conversation. An exec team new to machine learning saw a model that had been working start to wobble, and a retraining cycle that took time. That gap between "it broke" and "it's fixed" created real pressure and a potential stop to the project.</p>
       <p>In the end the episode became one of the better arguments for the whole approach. A model you can monitor, retrain and adapt is a capability, not a one-off artefact. The shock was an unplanned stress test, and the system came through it.</p>
     </div>
   </div>
@@ -322,7 +322,7 @@
   <div class="wrap">
     <div class="kicker">06 · How it works</div>
     <h2>From gut feel to a ranked pipeline of prospects</h2>
-    <p class="lead">The point was to turn a gut-feel sale into a system. A partner captures a prospect; the app enriches it, scores it, and ranks it against every other prospect, floating the highest-propensity people to the top so partners spend their time where it pays off. Under the hood, the production design closed that loop without anyone touching a spreadsheet.</p>
+    <p class="lead">The point was to turn a gut-feel sale into a system. A partner captures a prospect; the app enriches it, scores it, and ranks it against every other prospect, floating the highest-propensity people to the top so partners spend their time where it pays off. The production design closed that loop.</p>
     <div class="pipe">
       <div class="pipe-node"><div class="pi">➕</div><div class="pt">New prospect</div><div class="ps">captured in the app</div></div>
       <div class="pipe-arrow">→</div>
@@ -357,11 +357,11 @@
     <div class="lessons">
       <div class="lesson">
         <h4>◆ Data quality beats data volume</h4>
-        <p>One provider returned far more attributes than another, but accuracy tracked completeness, not count. The most complete data file produced the most accurate model. We held the focus on information quality rather than sheer volume.</p>
+        <p>One provider returned far more attributes than another, but accuracy tracked completeness, not count. The most complete data file produced the most accurate model. We kept the focus on information quality rather than sheer volume.</p>
       </div>
       <div class="lesson">
         <h4>◆ A model is never finished</h4>
-        <p>Shipping is the start, not the end. The market shock proved it: a live model needs monitoring and a retraining path built in from day one, because the world will eventually stop looking like the training data. Treat the model as a standing system, not a deliverable.</p>
+        <p>Shipping is the start, not the end. The market shock proved it, a live model needs monitoring and retraining built in. The world will eventually stop looking like the training data. Treat the model as infrastructure, not a deliverable.</p>
       </div>
       <div class="pull">For the first time at UW, a machine-learning model went live in a <span>partner-facing product</span>. The capability mattered more than the metric.</div>
       <div class="lesson">
@@ -370,7 +370,7 @@
       </div>
       <div class="lesson">
         <h4>◆ Interpretability drives adoption</h4>
-        <p>Partners act on scores they understand. Building the feature-impact view was as much about adoption as governance: the "why" behind a score is what turns a number into a decision.</p>
+        <p>Partners act on scores they understand. Building the feature impact view was as much about adoption as governance: the "why" behind a score was essential to getting adoption.</p>
       </div>
     </div>
   </div>
@@ -380,10 +380,10 @@
 <section id="sowhat">
   <div class="wrap">
     <div class="kicker">08 · So what</div>
-    <h2>The model was the start. The platform was the point.</h2>
+    <h2>The model was the start.</h2>
     <div class="prose">
-      <p>Switch-o-meter was the activation layer of the wider <a href="index.html">UW Partner Network</a> rebuild, and the piece I am proudest of: not because the model was elaborate, but because getting a model into a live, partner-facing product in a business that had never done it before is mostly a job of pipelines, providers, privacy and patience. The data science is real, but the harder work sits around it.</p>
-      <p>The most valuable output was not the prediction. Building that first ML service gave UW its first MLOps infrastructure: the pipelines, deployment and monitoring that every production model needs. Once that existed, the second model was a different conversation, and the question shifted from "can we" to "what next".</p>
+      <p>Switch-o-meter was the activation layer of the wider <a href="index.html">UW Partner Network</a> rebuild, and the piece I am proudest of: not because the model was elaborate, but because getting a model into a live, partner-facing product in a business that had never done it before is mostly a job of pipelines, providers, privacy and patience.</p>
+      <p>The most valuable output was not the prediction. Building that first ML service gave UW its first MLOps infrastructure: the pipelines, deployment and monitoring that every production model needs. Once that existed, the second model was a different conversation.</p>
     </div>
     <div class="legacy">
       <div class="legacy-core">First MLOps infrastructure<span>built for Switch-o-meter</span></div>
@@ -395,7 +395,7 @@
       </div>
     </div>
     <div class="prose">
-      <p>That platform became the foundation for later AI initiatives across the business: an NLP analysis of call-centre transcripts to sharpen customer service, churn modelling inside the home-services team, and others since. The lasting return on one production model was the capability to keep building, and that is what I most want to leave behind in any organisation: the means to make the next one.</p>
+      <p>That platform became the foundation for later AI initiatives across the business: an NLP analysis of call-centre transcripts to sharpen customer service, churn modelling inside the home-services team, and others since. The lasting return on one production model was the capability to keep building.</p>
     </div>
   </div>
 </section>
